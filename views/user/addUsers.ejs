@@ -1,35 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Form</title>
-  
-</head>
-<body>
-    <h1>User Form</h1>
-    <form action="/submit" method="POST">
-        <div>
-            <label for="first_name">First Name:</label>
-            <input type="text" id="first_name" name="first_name" required>
-        </div>
-        <div>
-            <label for="last_name">Last Name:</label>
-            <input type="text" id="last_name" name="last_name" required>
-        </div>
-        <div>
-            <label for="jmbg">JMBG:</label>
-            <input type="number" id="jmbg" name="jmbg" required>
-        </div>
-        <div>
-            <label for="birth_date">Birth Date:</label>
-            <input type="date" id="birth_date" name="birth_date" required>
-        </div>
-        <div>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-        <button type="submit">Submit</button>
-    </form>
-</body>
-</html>
+<div id="createUserModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCreateUserModal()">&times;</span>
+        <form class="form-group" action="#" onsubmit="handleCreateFormSubmit(event)" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="create_first_name">Ime:</label>
+                <input class="form-input" type="text" id="create_first_name" name="first_name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="create_last_name">Prezime:</label>
+                <input class="form-input" type="text" id="create_last_name" name="last_name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="create_jmbg">JMBG:</label>
+                <input class="form-input" type="number" id="create_jmbg" name="jmbg" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="create_birth_date">Datum rodjenja:</label>
+                <input class="form-input" type="date" id="create_birth_date" name="birth_date" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="create_email">Email:</label>
+                <input class="form-input" type="email" id="create_email" name="email" required>
+            </div>
+            <button class="form-button" type="button" onclick="addUserApi()">Sacuvaj</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openCreateUserModal() {
+        document.getElementById('createUserModal').style.display = 'block';
+    }
+
+    function closeCreateUserModal() {
+        document.getElementById('createUserModal').style.display = 'none';
+    }
+
+    async function addUserApi() {
+        const firstName = document.getElementById('create_first_name').value;
+        const lastName = document.getElementById('create_last_name').value;
+        const jmbg = document.getElementById('create_jmbg').value;
+        const birthDate = document.getElementById('create_birth_date').value;
+        const email = document.getElementById('create_email').value;
+
+        const response = await fetch('/api/user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ first_name: firstName, last_name: lastName, jmbg, birth_date: birthDate, email })
+        });
+
+        if (response.ok) {
+            alert('Uspesno dodat korisnik');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            alert('Doslo je do greske');
+        }
+    }
+</script>

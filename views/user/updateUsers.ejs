@@ -1,0 +1,71 @@
+<div id="updateUserModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeUpdateUserModal()">&times;</span>
+        <form class="form-group" action="#" onsubmit="handleUpdateFormSubmit(event)" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="update_first_name">Ime:</label>
+                <input class="form-input" type="text" id="update_first_name" name="first_name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_last_name">Prezime:</label>
+                <input class="form-input" type="text" id="update_last_name" name="last_name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_jmbg">JMBG:</label>
+                <input class="form-input" type="number" id="update_jmbg" name="jmbg" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_birth_date">Datum rodjenja:</label>
+                <input class="form-input" type="date" id="update_birth_date" name="birth_date" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_email">Email:</label>
+                <input class="form-input" type="email" id="update_email" name="email" required>
+            </div>
+            <input type="hidden" id="update_user_id" name="user_id">
+            <button class="form-button" type="button" onclick="updateUserApi()">Izmeni</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openUpdateUserModal(user) {
+        document.getElementById('updateUserModal').style.display = 'block';
+        document.getElementById('update_user_id').value = user.user_id;
+        document.getElementById('update_first_name').value = user.first_name;
+        document.getElementById('update_last_name').value = user.last_name;
+        document.getElementById('update_jmbg').value = user.jmbg;
+        document.getElementById('update_birth_date').value = new Date(user.birth_date).toISOString().split('T')[0];
+        document.getElementById('update_email').value = user.email;
+    }
+
+    function closeUpdateUserModal() {
+        document.getElementById('updateUserModal').style.display = 'none';
+    }
+
+    async function updateUserApi() {
+        const userId = document.getElementById('update_user_id').value;
+        const firstName = document.getElementById('update_first_name').value;
+        const lastName = document.getElementById('update_last_name').value;
+        const jmbg = document.getElementById('update_jmbg').value;
+        const birthDate = document.getElementById('update_birth_date').value;
+        const email = document.getElementById('update_email').value;
+
+        const response = await fetch(`/api/user/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ first_name: firstName, last_name: lastName, jmbg, birth_date: birthDate, email })
+        });
+
+        if (response.ok) {
+            alert('Uspjesno ste izmjenili korisnika');
+           setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            alert('Doslo je do greske');
+        }
+    }
+</script>

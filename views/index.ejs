@@ -6,16 +6,20 @@
     <title>User Form</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/tables.css">
+    <link rel="stylesheet" href="/css/modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
     <h1 class="header">Dobro dosli</h1>
-    <form action="" method="POST" class="user-form">
+    <form action="" method="POST" class="user-form" >
         <div class="form-group">
             <label for="search" class="form-label">Pretrazi Korisnike:</label>
             <input type="text" id="search" name="search" class="form-input" placeholder="ime, prezime, jmbg">
         </div>
-        <button type="button" class="form-button">Pretrazi</button>
+        <button type="button" class="form-button" onclick="searchUsers()">Pretrazi</button>
     </form>
+
+    <button id="openCreateModalBtn" class="form-button" onclick="openCreateUserModal()">Registruj novog korisnika</button>
 
     <table class="user-table">
         <thead>
@@ -28,6 +32,7 @@
                 <th>Email</th>
                 <th>Created At</th>
                 <th>Updated At</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody id="user-table-body">
@@ -35,14 +40,52 @@
         </tbody>
     </table>
 
-     <!-- Pagination controls -->
-     <div class="pagination">
+    <!-- Pagination controls -->
+    <div class="pagination">
         <button onclick="prevPage()">Previous</button>
         <span id="page-info"></span>
         <button onclick="nextPage()">Next</button>
     </div>
 
+    <!-- Include the modal content from addUsers.ejs and updateUsers.ejs -->
+    <%- include('user/addUsers') %>
+    <%- include('user/updateUsers') %>
+
     <script>
+        // Get the modal
+        var createModal = document.getElementById("createUserModal");
+        var updateModal = document.getElementById("updateUserModal");
+
+        // Get the button that opens the modal
+        var createBtn = document.getElementById("openCreateModalBtn");
+
+        // Get the <span> element that closes the modal
+        var createSpan = document.getElementsByClassName("close")[0];
+        var updateSpan = document.getElementsByClassName("close")[1];
+
+        // When the user clicks the button, open the modal 
+        createBtn.onclick = function() {
+            createModal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        createSpan.onclick = function() {
+            createModal.style.display = "none";
+        }
+        updateSpan.onclick = function() {
+            updateModal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == createModal) {
+                createModal.style.display = "none";
+            }
+            if (event.target == updateModal) {
+                updateModal.style.display = "none";
+            }
+        }
+
         let currentPage = 1;
         const limit = 10;
 
@@ -73,6 +116,10 @@
                     <td>${user.email}</td>
                     <td>${new Date(user.created_at).toLocaleString()}</td>
                     <td>${new Date(user.updated_at).toLocaleString()}</td>
+                    <td>
+                        <i class="fa fa-edit" style="font-size:24px;color: lightgreen; cursor: pointer;" onclick='openUpdateUserModal(${JSON.stringify(user)})'></i>
+                        <i class="fa fa-trash-o" style="font-size:24px; color: red;cursor: pointer;" onclick="deleteUser(${user.user_id})"></i>
+                    </td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
@@ -101,6 +148,31 @@
                 renderTable(data.user);
                 updatePageInfo(data.count);
             }
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            // const userId = document.getElementById('user_id').value;
+
+            // if (userId) {
+            //     updateUserApi(userId);
+            // } else {
+            //     addUserApi();
+            // }
+        }
+
+        async function deleteUser(userId) {
+            if(confirm('Da li ste sigurno da zelite obrisati korisnika?')){
+                const response = await fetch(`/api/user/${userId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                searchUsers();
+            } else {
+                alert('Failed to delete user');
+            }
+            }
+
         }
 
         // Initial load
