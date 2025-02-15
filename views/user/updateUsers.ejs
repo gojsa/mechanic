@@ -19,6 +19,10 @@
                 <input class="form-input" type="date" id="update_birth_date" name="birth_date" required>
             </div>
             <div class="form-group">
+                <label class="form-label" for="update_phone">Broj telefona:</label>
+                <input class="form-input" type="phone" id="update_phone" name="phone" required>
+            </div>
+            <div class="form-group">
                 <label class="form-label" for="update_email">Email:</label>
                 <input class="form-input" type="email" id="update_email" name="email" required>
             </div>
@@ -36,6 +40,7 @@
         document.getElementById('update_last_name').value = user.last_name;
         document.getElementById('update_jmbg').value = user.jmbg;
         document.getElementById('update_birth_date').value = new Date(user.birth_date).toISOString().split('T')[0];
+        document.getElementById('update_phone').value = user.phone_number;
         document.getElementById('update_email').value = user.email;
     }
 
@@ -49,6 +54,7 @@
         const lastName = document.getElementById('update_last_name').value;
         const jmbg = document.getElementById('update_jmbg').value;
         const birthDate = document.getElementById('update_birth_date').value;
+        const phone_number = document.getElementById('update_phone').value;
         const email = document.getElementById('update_email').value;
 
         const response = await fetch(`/api/user/${userId}`, {
@@ -56,7 +62,7 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ first_name: firstName, last_name: lastName, jmbg, birth_date: birthDate, email })
+            body: JSON.stringify({ first_name: firstName, last_name: lastName, jmbg, birth_date: birthDate, email,phone_number })
         });
 
         if (response.ok) {

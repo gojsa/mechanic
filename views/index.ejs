@@ -33,8 +33,7 @@
                 <th>JMBG</th>
                 <th>Datum rodjenja</th>
                 <th>Email</th>
-                <th>Datum kreiranja</th>
-                <th>Datum izmjene</th>
+                <th>Broj telefona</th>
                 <th>Akcije</th>
             </tr>
         </thead>
@@ -116,14 +115,13 @@
                     tbody.innerHTML = '';
                     users.forEach(user => {
                         const row = `<tr ondblclick="redirectToCarView(${user.user_id})">
-            <td>${user.user_id}</td>
+            <td>${user.count}</td>
             <td>${user.first_name}</td>
             <td>${user.last_name}</td>
             <td>${user.jmbg}</td>
             <td>${new Date(user.birth_date).toLocaleDateString()}</td>
             <td>${user.email}</td>
-            <td>${new Date(user.created_at).toLocaleString()}</td>
-            <td>${new Date(user.updated_at).toLocaleString()}</td>
+            <td>${user.phone_number}</td>
             <td>
                 <i class="fa fa-edit" style="font-size:24px;color: lightgreen; cursor: pointer;" onclick='openUpdateUserModal(${JSON.stringify(user)})'></i>
                 <i class="fa fa-trash-o" style="font-size:24px; color: red;cursor: pointer;" onclick="deleteUser(${user.user_id})"></i>

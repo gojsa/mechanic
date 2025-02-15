@@ -2,8 +2,8 @@ const { type } = require('os');
 const { Sequelize, DataTypes } = require('sequelize');
 
 module.exports = (sequelize, Sequelize) => {
-    const User = sequelize.define('car', {
-        car_id: {
+    const ProductionOrder = sequelize.define('production_order', {
+        production_order_id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true
@@ -11,34 +11,28 @@ module.exports = (sequelize, Sequelize) => {
         user_id: {
             type: DataTypes.INTEGER,
         },
-        name: {
-            type: DataTypes.STRING,
+        car_id: {
+            type: DataTypes.INTEGER,
         },
-        chassis_number: {
-            type: DataTypes.STRING,
-        },
-        motor_number: {
+        number: {
             type: DataTypes.STRING,
         },
         mileage: {
             type: DataTypes.STRING,
         },
-        plate_number: {
-            type: DataTypes.STRING,
-        },
-        fuel: {
-            type: DataTypes.STRING,
-        },
-        year: {
-            type: DataTypes.STRING,
-        },
         note: {
             type: DataTypes.TEXT,
+        },
+        description: {
+            type: DataTypes.TEXT,
+        },
+        price: {
+            type: DataTypes.STRING,
         },
     }, {
         timestamps: true,
         createdAt: "created_at",
         updatedAt: "updated_at"
     });
-    return User;
+    return ProductionOrder;
 }

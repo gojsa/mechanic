@@ -19,6 +19,18 @@
                 <input class="form-input" type="number" id="update_year" name="year" required>
             </div>
             <div class="form-group">
+                <label class="form-label" for="update_motor_number">Broj motora:</label>
+                <input class="form-input" type="text" id="update_motor_number" name="motor_number" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_mileage">Kilometraza:</label>
+                <input class="form-input" type="text" id="update_mileage" name="mileage" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_plate_number">Registarski broj:</label>
+                <input class="form-input" type="text" id="update_plate_number" name="plate_number" required>
+            </div>
+            <div class="form-group">
                 <label class="form-label" for="update_note">Napomena:</label>
                 <textarea class="form-input" id="update_note" name="note"></textarea>
             </div>
@@ -31,11 +43,14 @@
 <script>
     function openUpdateCarModal(car) {
         document.getElementById('updateCarModal').style.display = 'block';
-        document.getElementById('update_car_id').value = car.id;
+        document.getElementById('update_car_id').value = car.car_id;
         document.getElementById('update_car_name').value = car.name;
         document.getElementById('update_chassis_number').value = car.chassis_number;
         document.getElementById('update_fuel').value = car.fuel;
         document.getElementById('update_year').value = car.year;
+        document.getElementById('update_motor_number').value = car.motor_number;
+        document.getElementById('update_mileage').value = car.mileage;
+        document.getElementById('update_plate_number').value = car.plate_number;
         document.getElementById('update_note').value = car.note;
     }
 
@@ -49,6 +64,9 @@
         const chassisNumber = document.getElementById('update_chassis_number').value;
         const fuel = document.getElementById('update_fuel').value;
         const year = document.getElementById('update_year').value;
+        const motorNumber = document.getElementById('update_motor_number').value;
+        const mileage = document.getElementById('update_mileage').value;
+        const plateNumber = document.getElementById('update_plate_number').value;
         const note = document.getElementById('update_note').value;
 
         const response = await fetch(`/api/car/${carId}`, {
@@ -56,7 +74,7 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, chassis_number: chassisNumber, fuel, year, note })
+            body: JSON.stringify({ name, chassis_number: chassisNumber, fuel, year, motor_number: motorNumber, mileage, plate_number: plateNumber, note })
         });
 
         if (response.ok) {

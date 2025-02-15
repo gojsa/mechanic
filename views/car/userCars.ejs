@@ -23,6 +23,9 @@
                 <th>Broj sasije</th>
                 <th>Gorivo</th>
                 <th>Godina</th>
+                <th>Broj motora</th>
+                <th>Kilometraza</th>
+                <th>Registarski broj</th>
                 <th>Napomena</th>
                 <th>Akcije</th>
             </tr>
@@ -49,6 +52,9 @@
                     <td>${car.chassis_number}</td>
                     <td>${car.fuel}</td>
                     <td>${car.year}</td>
+                    <td>${car.motor_number}</td>
+                    <td>${car.mileage}</td>
+                    <td>${car.plate_number}</td>
                     <td>${car.note}</td>
                     <td>
                         <i class="fa fa-edit" style="font-size:24px;color: lightgreen; cursor: pointer;" onclick='openUpdateCarModal(${JSON.stringify(car)})'></i>
@@ -96,6 +102,9 @@
             document.getElementById('update_chassis_number').value = car.chassis_number;
             document.getElementById('update_fuel').value = car.fuel;
             document.getElementById('update_year').value = car.year;
+            document.getElementById('update_motor_number').value = car.motor_number;
+            document.getElementById('update_mileage').value = car.mileage;
+            document.getElementById('update_plate_number').value = car.plate_number;
             document.getElementById('update_note').value = car.note;
             updateModal.style.display = "block";
         }
@@ -111,6 +120,9 @@
             const chassisNumber = document.getElementById('update_chassis_number').value;
             const fuel = document.getElementById('update_fuel').value;
             const year = document.getElementById('update_year').value;
+            const motorNumber = document.getElementById('update_motor_number').value;
+            const mileage = document.getElementById('update_mileage').value;
+            const plateNumber = document.getElementById('update_plate_number').value;
             const note = document.getElementById('update_note').value;
 
             const response = await fetch(`/api/car/${carId}`, {
@@ -118,7 +130,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ name, chassis_number: chassisNumber, fuel, year, note })
+                body: JSON.stringify({ name, chassis_number: chassisNumber, fuel, year, motor_number: motorNumber, mileage, plate_number: plateNumber, note })
             });
 
             if (response.ok) {

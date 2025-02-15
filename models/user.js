@@ -17,6 +17,9 @@ module.exports = (sequelize, Sequelize) => {
         jmbg: {
             type: DataTypes.STRING,
         },
+        phone_number: {
+            type: DataTypes.STRING,
+        },
         birth_date: {
             type: DataTypes.DATE,
         },

@@ -12,15 +12,19 @@
             </div>
             <div class="form-group">
                 <label class="form-label" for="create_jmbg">JMBG:</label>
-                <input class="form-input" type="number" id="create_jmbg" name="jmbg" required>
+                <input class="form-input" type="number" id="create_jmbg" name="jmbg" >
             </div>
             <div class="form-group">
                 <label class="form-label" for="create_birth_date">Datum rodjenja:</label>
-                <input class="form-input" type="date" id="create_birth_date" name="birth_date" required>
+                <input class="form-input" type="date" id="create_birth_date" name="birth_date" >
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="create_phone">Telefon:</label>
+                <input class="form-input" type="email" id="create_phone" name="email" >
             </div>
             <div class="form-group">
                 <label class="form-label" for="create_email">Email:</label>
-                <input class="form-input" type="email" id="create_email" name="email" required>
+                <input class="form-input" type="email" id="create_email" name="email" >
             </div>
             <button class="form-button" type="button" onclick="addUserApi()">Sacuvaj</button>
         </form>
@@ -41,6 +45,7 @@
         const lastName = document.getElementById('create_last_name').value;
         const jmbg = document.getElementById('create_jmbg').value;
         const birthDate = document.getElementById('create_birth_date').value;
+        const phone_number = document.getElementById('create_phone').value;
         const email = document.getElementById('create_email').value;
 
         const response = await fetch('/api/user', {
@@ -48,7 +53,7 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ first_name: firstName, last_name: lastName, jmbg, birth_date: birthDate, email })
+            body: JSON.stringify({ first_name: firstName, last_name: lastName, jmbg, birth_date: birthDate, email,phone_number })
         });
 
         if (response.ok) {

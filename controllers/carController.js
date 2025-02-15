@@ -12,6 +12,10 @@ const createCar = asyncHandler(async (req, res) => {
     const fuel = req.body.fuel;
     const year = req.body.year;
     const note = req.body.note;
+    const motor_number = req.body.motor_number;
+    const mileage = req.body.mileage;
+    const plate_number = req.body.plate_number;
+ 
     if (!name || !chassis_number) {
         res.status(400).json({ message: "Ime i broj sasije su obavezni podaci!" });
     }
@@ -22,7 +26,10 @@ const createCar = asyncHandler(async (req, res) => {
             chassis_number,
             fuel,
             year,
-            note
+            note,
+            motor_number,
+            mileage,
+            plate_number
         });
         res.status(201).json({
             car
@@ -54,6 +61,9 @@ const updateCar = asyncHandler(async (req, res) => {
     const fuel = req.body.fuel;
     const year = req.body.year;
     const note = req.body.note;
+    const motor_number = req.body.motor_number;
+    const mileage = req.body.mileage;
+    const plate_number = req.body.plate_number;
     if (!name || !chassis_number) {
         res.status(400).json({ message: "Ime i broj sasije su obavezni podaci!" });
     }
@@ -63,7 +73,10 @@ const updateCar = asyncHandler(async (req, res) => {
             chassis_number,
             fuel,
             year,
-            note
+            note,
+            motor_number,
+            mileage,
+            plate_number
         }, {
             where: {
                 car_id

@@ -16,33 +16,7 @@ const getOneUser = asyncHandler(async (req, res) => {
 });
 
 // get user data
-// const getUsers = asyncHandler(async (req, res) => {
-//     const search = req.query.search;
-//     const limit = req.params.limit;
-//     const offset = req.params.offset;
-//     const user = await db.sequelize.query(
-//         `SELECT "user".*, "car"."chassis_number"
-//          FROM "user"
-//          LEFT JOIN "car" ON "user"."user_id" = "car"."user_id"
-//          WHERE "user"."first_name" ILIKE :search 
-//          OR "user"."last_name" ILIKE :search
-//          OR "user"."jmbg" ILIKE :search
-//          OR "car"."chassis_number" ILIKE :search
-//          LIMIT :limit OFFSET :offset`,
-//         {
-//             replacements: { search: `%${search}%`, limit: Number(limit), offset: Number(offset - 1) * limit },
-//             type: QueryTypes.SELECT
-//         }
-//     );
-//     if (!user) {
-//         res.status(404).json({ message: "Korisnik nije pronadjen!" });
-//     }
-//     console.log(user);
-//     res.status(200).json({
-//         user: user,
-//         count: user.count
-//     });
-// });
+
 const getUsers = asyncHandler(async (req, res) => {
     try {
         const search = req.query.search || "";
@@ -65,17 +39,30 @@ const getUsers = asyncHandler(async (req, res) => {
         );
 
         // Upit za paginirane podatke
+        const query = 
+        `
+SELECT subquery.*, 
+       row_number() OVER (ORDER BY subquery."user_id") as count
+FROM (
+    SELECT "user".*, "car"."chassis_number","car"."plate_number",
+           row_number() OVER (PARTITION BY "user"."user_id" ORDER BY "car"."chassis_number") as row_num
+    FROM "user"
+    LEFT JOIN "car" ON "user"."user_id" = "car"."user_id"
+    where
+    (
+            "first_name" ILIKE '%${search}%' 
+             OR "last_name" ILIKE '%${search}%'
+             OR "jmbg" ILIKE '%${search}%'
+             OR "chassis_number" ILIKE '%${search}%'
+             OR "plate_number" ILIKE '%${search}%'
+             )
+) subquery
+WHERE row_num = 1
+`;
         const users = await db.sequelize.query(
-            `SELECT "user".*, "car"."chassis_number"
-             FROM "user"
-             LEFT JOIN "car" ON "user"."user_id" = "car"."user_id"
-             WHERE "user"."first_name" ILIKE :search 
-             OR "user"."last_name" ILIKE :search
-             OR "user"."jmbg" ILIKE :search
-             OR "car"."chassis_number" ILIKE :search
-             LIMIT :limit OFFSET :offset`,
+            query,
             {
-                replacements: { search: `%${search}%`, limit, offset },
+             //   replacements: { search: `%${search}%`, limit, offset },
                 type: QueryTypes.SELECT
             }
         );
@@ -105,6 +92,7 @@ const createUser = asyncHandler(async (req, res) => {
     const jmbg = req.body.jmbg;
     const birth_date = req.body.birth_date;
     const email = req.body.email;
+    const phone_number = req.body.phone_number;
     if (!first_name || !last_name) {
         res.status(400).json({ message: "Ime i prezime su obavezni podaci!" });
     }
@@ -114,7 +102,8 @@ const createUser = asyncHandler(async (req, res) => {
             last_name,
             jmbg,
             birth_date,
-            email
+            email,
+            phone_number
         });
 
         if (!user) {
@@ -135,6 +124,7 @@ const updateUser = asyncHandler(async (req, res) => {
     const jmbg = req.body.jmbg;
     const birth_date = req.body.birth_date;
     const email = req.body.email;
+    const phone_number = req.body.phone_number;
 
     try {
         const user = await User.update({
@@ -142,7 +132,8 @@ const updateUser = asyncHandler(async (req, res) => {
             last_name,
             jmbg,
             birth_date,
-            email
+            email,
+            phone_number
         }, {
             where: {
                 user_id

@@ -19,6 +19,18 @@
                 <input class="form-input" type="number" id="create_year" name="year" required>
             </div>
             <div class="form-group">
+                <label class="form-label" for="create_motor_number">Broj motora:</label>
+                <input class="form-input" type="text" id="create_motor_number" name="motor_number" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="create_mileage">Kilometraza:</label>
+                <input class="form-input" type="text" id="create_mileage" name="mileage" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="create_plate_number">Registarski broj:</label>
+                <input class="form-input" type="text" id="create_plate_number" name="plate_number" required>
+            </div>
+            <div class="form-group">
                 <label class="form-label" for="create_note">Napomena:</label>
                 <textarea class="form-input" id="create_note" name="note"></textarea>
             </div>
@@ -43,6 +55,9 @@
         const chassisNumber = document.getElementById('create_chassis_number').value;
         const fuel = document.getElementById('create_fuel').value;
         const year = document.getElementById('create_year').value;
+        const motorNumber = document.getElementById('create_motor_number').value;
+        const mileage = document.getElementById('create_mileage').value;
+        const plateNumber = document.getElementById('create_plate_number').value;
         const note = document.getElementById('create_note').value;
 
         const response = await fetch('/api/car', {
@@ -50,7 +65,17 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({user_id: USERID, name, chassis_number: chassisNumber, fuel, year, note })
+            body: JSON.stringify({
+                user_id: USERID,
+                name,
+                chassis_number: chassisNumber,
+                fuel,
+                year,
+                motor_number: motorNumber,
+                mileage,
+                plate_number: plateNumber,
+                note
+            })
         });
 
         if (response.ok) {
