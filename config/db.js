@@ -28,5 +28,8 @@ db.Op = Op;
 db.sequelize = sequelize;
 
 db.user = require("../models/user")(sequelize, Sequelize);
+db.car = require("../models/car")(sequelize, Sequelize);
+
+db.user.hasMany(db.car, { foreignKey: 'user_id' });
 
 module.exports = db

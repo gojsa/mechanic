@@ -1,0 +1,71 @@
+<div id="updateCarModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeUpdateCarModal()">&times;</span>
+        <form class="form-group" action="#" onsubmit="handleUpdateCarFormSubmit(event)" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="update_car_name">Naziv:</label>
+                <input class="form-input" type="text" id="update_car_name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_chassis_number">Broj sasije:</label>
+                <input class="form-input" type="text" id="update_chassis_number" name="chassis_number" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_fuel">Gorivo:</label>
+                <input class="form-input" type="text" id="update_fuel" name="fuel" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_year">Godina:</label>
+                <input class="form-input" type="number" id="update_year" name="year" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_note">Napomena:</label>
+                <textarea class="form-input" id="update_note" name="note"></textarea>
+            </div>
+            <input type="hidden" id="update_car_id" name="car_id">
+            <button class="form-button" type="button" onclick="updateCarApi()">Izmeni</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openUpdateCarModal(car) {
+        document.getElementById('updateCarModal').style.display = 'block';
+        document.getElementById('update_car_id').value = car.id;
+        document.getElementById('update_car_name').value = car.name;
+        document.getElementById('update_chassis_number').value = car.chassis_number;
+        document.getElementById('update_fuel').value = car.fuel;
+        document.getElementById('update_year').value = car.year;
+        document.getElementById('update_note').value = car.note;
+    }
+
+    function closeUpdateCarModal() {
+        document.getElementById('updateCarModal').style.display = 'none';
+    }
+
+    async function updateCarApi() {
+        const carId = document.getElementById('update_car_id').value;
+        const name = document.getElementById('update_car_name').value;
+        const chassisNumber = document.getElementById('update_chassis_number').value;
+        const fuel = document.getElementById('update_fuel').value;
+        const year = document.getElementById('update_year').value;
+        const note = document.getElementById('update_note').value;
+
+        const response = await fetch(`/api/car/${carId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, chassis_number: chassisNumber, fuel, year, note })
+        });
+
+        if (response.ok) {
+            alert('Uspjesno ste izmjenili vozilo');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            alert('Doslo je do greske');
+        }
+    }
+</script>

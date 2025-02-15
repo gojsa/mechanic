@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vozila</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/tables.css">
+    <link rel="stylesheet" href="/css/modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <h1 class="header">Vozila</h1>
+
+    <button id="openCreateModalBtn" class="form-button" onclick="openCreateCarModal()">Dodaj novo vozilo</button>
+
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>Naziv</th>
+                <th>Broj sasije</th>
+                <th>Gorivo</th>
+                <th>Godina</th>
+                <th>Napomena</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody id="car-table-body">
+            <!-- Rows will be inserted here dynamically -->
+        </tbody>
+    </table>
+
+    <!-- Include the modal content from addCar.ejs and updateCar.ejs -->
+    <%- include('addCar') %>
+    <%- include('updateCar') %>
+
+    <script>
+        const jsonData = JSON.parse(`<%- JSON.stringify(car) %>`);
+        console.log(jsonData);
+
+        function renderTable(cars) {
+            const tbody = document.getElementById('car-table-body');
+            tbody.innerHTML = '';
+            cars.forEach(car => {
+                const row = `<tr>
+                    <td>${car.name}</td>
+                    <td>${car.chassis_number}</td>
+                    <td>${car.fuel}</td>
+                    <td>${car.year}</td>
+                    <td>${car.note}</td>
+                    <td>
+                        <i class="fa fa-edit" style="font-size:24px;color: lightgreen; cursor: pointer;" onclick='openUpdateCarModal(${JSON.stringify(car)})'></i>
+                        <i class="fa fa-trash-o" style="font-size:24px; color: red;cursor: pointer;" onclick="deleteCar(${car.car_id})"></i>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function editCar(car) {
+            // Implement edit functionality
+            console.log('Edit car:', car);
+        }
+
+        async function deleteCar(carId) {
+            // Implement delete functionality
+            console.log('Delete car with ID:', carId);
+            if(confirm('Da li ste sigurno da zelite obrisati vozilo?')){
+                const response = await fetch(`/api/car/${carId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert('Doslo je do greske');
+            }
+            }
+        }
+
+        function openCreateCarModal() {
+            const createModal = document.getElementById("createCarModal");
+            createModal.style.display = "block";
+        }
+
+        function closeCreateCarModal() {
+            const createModal = document.getElementById("createCarModal");
+            createModal.style.display = "none";
+        }
+
+        function openUpdateCarModal(car) {
+            const updateModal = document.getElementById("updateCarModal");
+            document.getElementById('update_car_id').value = car.car_id;
+            document.getElementById('update_car_name').value = car.name;
+            document.getElementById('update_chassis_number').value = car.chassis_number;
+            document.getElementById('update_fuel').value = car.fuel;
+            document.getElementById('update_year').value = car.year;
+            document.getElementById('update_note').value = car.note;
+            updateModal.style.display = "block";
+        }
+
+        function closeUpdateCarModal() {
+            const updateModal = document.getElementById("updateCarModal");
+            updateModal.style.display = "none";
+        }
+
+        async function updateCarApi() {
+            const carId = document.getElementById('update_car_id').value;
+            const name = document.getElementById('update_car_name').value;
+            const chassisNumber = document.getElementById('update_chassis_number').value;
+            const fuel = document.getElementById('update_fuel').value;
+            const year = document.getElementById('update_year').value;
+            const note = document.getElementById('update_note').value;
+
+            const response = await fetch(`/api/car/${carId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, chassis_number: chassisNumber, fuel, year, note })
+            });
+
+            if (response.ok) {
+                alert('Uspjesno ste izmjenili vozilo');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                alert('Doslo je do greske');
+            }
+        }
+
+        // Initial load
+        renderTable(jsonData);
+
+        // Close modals when clicking outside of them
+        window.onclick = function(event) {
+            const createModal = document.getElementById("createCarModal");
+            const updateModal = document.getElementById("updateCarModal");
+            if (event.target == createModal) {
+                createModal.style.display = "none";
+            }
+            if (event.target == updateModal) {
+                updateModal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+
+</html>

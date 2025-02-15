@@ -1,7 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const db = require("../config/db");
 const User = db.user;
-const { Op } = require("sequelize");
+const Car = db.car;
+const { Op, QueryTypes } = require("sequelize");
 
 const getOneUser = asyncHandler(async (req, res) => {
     const user_id = req.params.user_id;
@@ -15,28 +16,86 @@ const getOneUser = asyncHandler(async (req, res) => {
 });
 
 // get user data
+// const getUsers = asyncHandler(async (req, res) => {
+//     const search = req.query.search;
+//     const limit = req.params.limit;
+//     const offset = req.params.offset;
+//     const user = await db.sequelize.query(
+//         `SELECT "user".*, "car"."chassis_number"
+//          FROM "user"
+//          LEFT JOIN "car" ON "user"."user_id" = "car"."user_id"
+//          WHERE "user"."first_name" ILIKE :search 
+//          OR "user"."last_name" ILIKE :search
+//          OR "user"."jmbg" ILIKE :search
+//          OR "car"."chassis_number" ILIKE :search
+//          LIMIT :limit OFFSET :offset`,
+//         {
+//             replacements: { search: `%${search}%`, limit: Number(limit), offset: Number(offset - 1) * limit },
+//             type: QueryTypes.SELECT
+//         }
+//     );
+//     if (!user) {
+//         res.status(404).json({ message: "Korisnik nije pronadjen!" });
+//     }
+//     console.log(user);
+//     res.status(200).json({
+//         user: user,
+//         count: user.count
+//     });
+// });
 const getUsers = asyncHandler(async (req, res) => {
-    const search = req.query.search;
-    const limit = req.params.limit;
-    const offset = req.params.offset;
-    const user = await User.findAndCountAll({
-        where: {
-            [Op.or]: [
-                { first_name: { [Op.iLike]: `%${search}%` } },
-                { last_name: { [Op.iLike]: `%${search}%` } },
-                { jmbg: { [Op.iLike]: `%${search}%` } }
-            ]
-        },
-        limit: Number(limit),
-        offset: Number(offset - 1) * limit,
-    });
-    if (!user) {
-        res.status(404).json({ message: "Korisnik nije pronadjen!" });
+    try {
+        const search = req.query.search || "";
+        const limit = parseInt(req.params.limit, 10) || 10;
+        const offset = (parseInt(req.params.offset, 10) - 1) * limit || 0;
+
+        // Upit za broj rezultata
+        const countResult = await db.sequelize.query(
+            `SELECT COUNT(*) AS count
+             FROM "user"
+             LEFT JOIN "car" ON "user"."user_id" = "car"."user_id"
+             WHERE "user"."first_name" ILIKE :search 
+             OR "user"."last_name" ILIKE :search
+             OR "user"."jmbg" ILIKE :search
+             OR "car"."chassis_number" ILIKE :search`,
+            {
+                replacements: { search: `%${search}%` },
+                type: QueryTypes.SELECT
+            }
+        );
+
+        // Upit za paginirane podatke
+        const users = await db.sequelize.query(
+            `SELECT "user".*, "car"."chassis_number"
+             FROM "user"
+             LEFT JOIN "car" ON "user"."user_id" = "car"."user_id"
+             WHERE "user"."first_name" ILIKE :search 
+             OR "user"."last_name" ILIKE :search
+             OR "user"."jmbg" ILIKE :search
+             OR "car"."chassis_number" ILIKE :search
+             LIMIT :limit OFFSET :offset`,
+            {
+                replacements: { search: `%${search}%`, limit, offset },
+                type: QueryTypes.SELECT
+            }
+        );
+
+        const count = countResult[0]?.count || 0; // Ukupan broj rezultata
+
+        if (!users.length) {
+            return res.status(404).json({ message: "Korisnik nije pronađen!" });
+        }
+
+        res.status(200).json({
+            user: users, // Lista korisnika sa podacima
+            count, // Ukupan broj rezultata (za paginaciju)
+            limit,
+            offset
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Greška na serveru!" });
     }
-    res.status(200).json({
-        user: user.rows,
-        count: user.count
-    });
 });
 
 // create user

@@ -7,7 +7,11 @@ app.get("/", async (req, res) => {
   res.render("index");
 });
 
+// app.get("/car/onecar", async (req, res) => {
+//   res.render("car/onecar");
+// });
 app.use("/api/user", require("./routes/userRoute.js"));
+app.use("/api/car", require("./routes/carRoute.js"));
 
 
 app.listen(port, () => {
