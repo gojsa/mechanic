@@ -12,6 +12,7 @@ app.get("/", async (req, res) => {
 // });
 app.use("/api/user", require("./routes/userRoute.js"));
 app.use("/api/car", require("./routes/carRoute.js"));
+app.use("/api/productionOrder", require("./routes/productionOrderRoute.js"));
 
 
 app.listen(port, () => {

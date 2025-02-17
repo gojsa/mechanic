@@ -15,6 +15,7 @@
     <h1 class="header">Vozila</h1>
 
     <button id="openCreateModalBtn" class="form-button" onclick="openCreateCarModal()">Dodaj novo vozilo</button>
+    <button id="openCreateProductionOrderModalBtn" class="form-button" onclick="openCreateProductionOrderModal()">Dodaj novu narudzbinu</button>
 
     <table class="user-table">
         <thead>
@@ -38,10 +39,14 @@
     <!-- Include the modal content from addCar.ejs and updateCar.ejs -->
     <%- include('addCar') %>
     <%- include('updateCar') %>
+    <!-- Include the modal content from addProductionOrder.ejs -->
+    <%- include('../productionOrder/addProductionOrder') %>
 
     <script>
         const jsonData = JSON.parse(`<%- JSON.stringify(car) %>`);
         console.log(jsonData);
+
+        let selectedCarId = null;
 
         function renderTable(cars) {
             const tbody = document.getElementById('car-table-body');
@@ -59,6 +64,7 @@
                     <td>
                         <i class="fa fa-edit" style="font-size:24px;color: lightgreen; cursor: pointer;" onclick='openUpdateCarModal(${JSON.stringify(car)})'></i>
                         <i class="fa fa-trash-o" style="font-size:24px; color: red;cursor: pointer;" onclick="deleteCar(${car.car_id})"></i>
+                        <i class="fa fa-plus" style="font-size:24px; color: blue; cursor: pointer;" onclick="openCreateProductionOrderModal(${car.car_id})"></i>
                     </td>
                 </tr>`;
                 tbody.innerHTML += row;
@@ -114,27 +120,44 @@
             updateModal.style.display = "none";
         }
 
-        async function updateCarApi() {
-            const carId = document.getElementById('update_car_id').value;
-            const name = document.getElementById('update_car_name').value;
-            const chassisNumber = document.getElementById('update_chassis_number').value;
-            const fuel = document.getElementById('update_fuel').value;
-            const year = document.getElementById('update_year').value;
-            const motorNumber = document.getElementById('update_motor_number').value;
-            const mileage = document.getElementById('update_mileage').value;
-            const plateNumber = document.getElementById('update_plate_number').value;
-            const note = document.getElementById('update_note').value;
+        function openCreateProductionOrderModal(carId) {
+            selectedCarId = carId;
+            const createProductionOrderModal = document.getElementById("createProductionOrderModal");
+            createProductionOrderModal.style.display = "block";
+        }
 
-            const response = await fetch(`/api/car/${carId}`, {
-                method: 'PUT',
+        function closeCreateProductionOrderModal() {
+            const createProductionOrderModal = document.getElementById("createProductionOrderModal");
+            createProductionOrderModal.style.display = "none";
+        }
+
+        async function addProductionOrderApi() {
+            const car_id = selectedCarId;
+            const user_id = USERID;
+            const number = document.getElementById('create_order_number').value;
+            const mileage = document.getElementById('create_mileage').value;
+            const note = document.getElementById('create_note').value;
+            const description = document.getElementById('create_description').value;
+            const price = document.getElementById('create_price').value;
+
+            const response = await fetch('/api/productionOrder', {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ name, chassis_number: chassisNumber, fuel, year, motor_number: motorNumber, mileage, plate_number: plateNumber, note })
+                body: JSON.stringify({
+                    user_id,
+                    car_id,
+                    number,
+                    mileage,
+                    note,
+                    description,
+                    price
+                })
             });
 
             if (response.ok) {
-                alert('Uspjesno ste izmjenili vozilo');
+                alert('Uspesno dodata narudzbina');
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000);
@@ -150,11 +173,15 @@
         window.onclick = function(event) {
             const createModal = document.getElementById("createCarModal");
             const updateModal = document.getElementById("updateCarModal");
+            const createProductionOrderModal = document.getElementById("createProductionOrderModal");
             if (event.target == createModal) {
                 createModal.style.display = "none";
             }
             if (event.target == updateModal) {
                 updateModal.style.display = "none";
+            }
+            if (event.target == createProductionOrderModal) {
+                createProductionOrderModal.style.display = "none";
             }
         }
     </script>

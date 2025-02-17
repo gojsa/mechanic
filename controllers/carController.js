@@ -35,6 +35,7 @@ const createCar = asyncHandler(async (req, res) => {
             car
         });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: error.message });
     }
 });

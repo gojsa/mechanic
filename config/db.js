@@ -32,5 +32,7 @@ db.car = require("../models/car")(sequelize, Sequelize);
 db.productionOrder = require("../models/productionOrder")(sequelize, Sequelize);
 
 db.user.hasMany(db.car, { foreignKey: 'user_id' });
+db.car.hasMany(db.productionOrder, { foreignKey: 'car_id' });
+db.user.hasMany(db.productionOrder, { foreignKey: 'user_id' });
 
 module.exports = db
