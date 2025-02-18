@@ -1,9 +1,13 @@
 const express = require("express");
 const router = express.Router(); 
-const { createProductionOrder, updateProductionOrder, deleteProductionOrder, getProductionOrders,findAllProductionOrders } = require("../controllers/productionOrderController");
+const {findAllProductionOrdersTable, createProductionOrder, updateProductionOrder, deleteProductionOrder, getProductionOrders,findAllProductionOrders,carProduction } = require("../controllers/productionOrderController");
 
-router.get("/", findAllProductionOrders);
+
+router.get('/allProductions', findAllProductionOrders);
+
+ router.get("/", findAllProductionOrdersTable);
 router.get("/:car_id", getProductionOrders);
+router.get("/carProduction/render", carProduction);
 router.post("/", createProductionOrder);
 router.put("/:production_order_id", updateProductionOrder);
 router.delete("/:production_order_id", deleteProductionOrder);

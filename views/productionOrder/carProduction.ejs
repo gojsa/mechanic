@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proizvodni Nalozi</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/tables.css">
+    <link rel="stylesheet" href="/css/modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <h1 class="header">Proizvodni Nalozi za Vozilo</h1>
+
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>Broj Naloga</th>
+                <th>Kilometraza</th>
+                <th>Napomena</th>
+                <th>Opis</th>
+                <th>Cena</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody id="production-order-table-body">
+            <!-- Rows will be inserted here dynamically -->
+        </tbody>
+    </table>
+
+    <!-- Include the modal -->
+    <%- include('updateProduction') %>
+
+ 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const jsonData = JSON.parse(`<%- JSON.stringify(productionOrders) %>`);
+            console.log(jsonData);
+            renderTable(jsonData);
+
+            function renderTable(productionOrders) {
+                const tbody = document.getElementById('production-order-table-body');
+                tbody.innerHTML = '';
+                productionOrders.forEach(order => {
+                    const row = `<tr>
+                        <td>${order.number}</td>
+                        <td>${order.mileage}</td>
+                        <td>${order.note}</td>
+                        <td>${order.description}</td>
+                        <td>${order.price}</td>
+                        <td>
+                            <i class="fa fa-edit" style="font-size:24px;color: lightgreen; cursor: pointer;" onclick='openUpdateProductionOrderModal(${JSON.stringify(order)})'></i>
+                            <i class="fa fa-trash-o" style="font-size:24px; color: red;cursor: pointer;" onclick="deleteProductionOrder(${order.production_order_id})"></i>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            }
+
+            window.deleteProductionOrder = async function(orderId) {
+                if (confirm('Da li ste sigurno da zelite obrisati nalog?')) {
+                    const response = await fetch(`/api/productionOrder/${orderId}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        // Remove the deleted order from the table
+                        const updatedOrders = jsonData.filter(order => order.production_order_id !== orderId);
+                        renderTable(updatedOrders);
+                    } else {
+                        alert('Doslo je do greske');
+                    }
+                }
+            }
+            window.openUpdateProductionOrderModal = function(order) {
+                console.log('Open update modal for order:', order);
+                document.getElementById('update_order_id').value = order.production_order_id;
+                document.getElementById('update_order_mileage').value = order.mileage;
+                document.getElementById('update_order_note').value = order.note;
+                document.getElementById('update_order_description').value = order.description;
+                document.getElementById('update_order_price').value = order.price;
+                document.getElementById('updateProductionOrderModal').style.display = 'block';
+            }
+
+            window.closeUpdateProductionOrderModal = function() {
+                document.getElementById('updateProductionOrderModal').style.display = 'none';
+            }
+
+            window.updateProductionOrderApi = async function() {
+                const orderId = document.getElementById('update_order_id').value;
+                const mileage = document.getElementById('update_order_mileage').value;
+                const note = document.getElementById('update_order_note').value;
+                const description = document.getElementById('update_order_description').value;
+                const price = document.getElementById('update_order_price').value;
+
+                const response = await fetch(`/api/productionOrder/${orderId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({  mileage, note, description, price })
+                });
+
+                if (response.ok) {
+                    alert('Uspjesno ste izmjenili nalog');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    alert('Doslo je do greske');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

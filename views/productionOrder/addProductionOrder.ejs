@@ -2,17 +2,14 @@
     <div class="modal-content">
         <span class="close" onclick="closeCreateProductionOrderModal()">&times;</span>
         <form class="form-group" action="#" onsubmit="handleCreateProductionOrder(event)" method="POST">
-            <div class="form-group">
-                <label class="form-label" for="create_order_number">Broj narudzbine:</label>
-                <input class="form-input" type="text" id="create_order_number" name="order_number" required>
-            </div>
+            
             <div class="form-group">
                 <label class="form-label" for="create_mileage">Kilometraza:</label>
-                <input class="form-input" type="text" id="create_mileage" name="mileage" required>
+                <input class="form-input" type="text" id="create_mileage_z" name="mileage" required>
             </div>
             <div class="form-group">
                 <label class="form-label" for="create_note">Napomena:</label>
-                <textarea class="form-input" id="create_note" name="note"></textarea>
+                <textarea class="form-input" id="create_note_z" name="note"></textarea>
             </div>
             <div class="form-group">
                 <label class="form-label" for="create_description">Opis:</label>
@@ -39,9 +36,8 @@
     async function addProductionOrderApi() {
         const car_id = selectedCarId;
         const user_id = USERID;
-        const number = document.getElementById('create_order_number').value;
-        const mileage = document.getElementById('create_mileage').value;
-        const note = document.getElementById('create_note').value;
+        const mileage = document.getElementById('create_mileage_z').value;
+        const note = document.getElementById('create_note_z').value;
         const description = document.getElementById('create_description').value;
         const price = document.getElementById('create_price').value;
 
@@ -53,7 +49,6 @@
             body: JSON.stringify({
                 user_id,
                 car_id,
-                number,
                 mileage,
                 note,
                 description,
@@ -62,7 +57,7 @@
         });
 
         if (response.ok) {
-            alert('Uspesno dodata narudzbina');
+            alert('Uspesno dodat nalog');
             setTimeout(() => {
                 window.location.reload();
             }, 1000);
