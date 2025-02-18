@@ -1,0 +1,225 @@
+<!-- 
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servisni Nalog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 210mm;
+            min-height: 297mm;
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .description {
+            height: 150px;
+            vertical-align: top;
+        }
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+        }
+        .footer div {
+            border-top: 1px solid #000;
+            padding-top: 10px;
+            text-align: center;
+            width: 45%;
+        }
+        .download-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            text-align: center;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="invoice">
+        <h2>Servisni Nalog</h2>
+        <table>
+            <tr>
+                <th>Broj naloga</th>
+                <td id="orderNumber"></td>
+                <th>Datum</th>
+                <td id="orderDate"></td>
+            </tr>
+            <tr>
+                <th>Vlasnik</th>
+                <td id="owner"></td>
+                <th>Registracija</th>
+                <td id="plateNumber"></td>
+            </tr>
+            <tr>
+                <th>Šasija</th>
+                <td id="chassisNumber"></td>
+                <th>Kilometraža</th>
+                <td id="mileage"></td>
+            </tr>
+            <tr>
+                <th>Napomena</th>
+                <td colspan="3" id="note"></td>
+            </tr>
+            <tr>
+                <th>Opis radova</th>
+                <td colspan="3" id="description" class="description"></td>
+            </tr>
+            <tr>
+                <th>Ukupna cena</th>
+                <td colspan="3" id="price"></td>
+            </tr>
+        </table>
+        <div class="footer">
+            <div>Primio na servis</div>
+            <div>Preuzeo sa servisa</div>
+        </div>
+    </div>
+
+    <button class="download-btn" onclick="downloadPDF()">Preuzmi PDF</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        const data = JSON.parse(`<%- JSON.stringify(productionOrders) %>`);
+       
+
+       document.getElementById("orderNumber").innerText = data[0].number;
+       document.getElementById("orderDate").innerText = new Date(data[0].created_at).toLocaleDateString();
+       document.getElementById("owner").innerText = `${data[0].first_name} ${data[0].last_name}`;
+       document.getElementById("plateNumber").innerText = data[0].plate_number;
+       document.getElementById("chassisNumber").innerText = data[0].chassis_number;
+       document.getElementById("mileage").innerText = data[0].mileage + " km";
+       document.getElementById("note").innerText = data[0].note;
+       document.getElementById("description").innerText = data[0].description;
+       document.getElementById("price").innerText = data[0].price + " KM";
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ format: 'a4' });
+            doc.html(document.getElementById("invoice"), {
+                callback: function (doc) {
+                    doc.save("Servisni_Nalog.pdf");
+                },
+                x: 10,
+                y: 10
+            });
+        }
+    </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="sr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/pdf.css">
+    <title>Servisni Nalog</title>
+</head>
+
+<body>
+    <div class="container" id="invoice">
+        <h2>Servisni Nalog</h2>
+        <table>
+            <tr>
+                <th>Broj naloga</th>
+                <td id="orderNumber"></td>
+                <th>Datum</th>
+                <td id="orderDate"></td>
+            </tr>
+            <tr>
+                <th>Vlasnik</th>
+                <td id="owner"></td>
+                <th>Broj tablica</th>
+                <td id="plateNumber"></td>
+            </tr>
+            <tr>
+                <th>Šasija</th>
+                <td id="chassisNumber"></td>
+                <th>Kilometraža</th>
+                <td id="mileage"></td>
+            </tr>
+            <tr>
+                <th>Napomena</th>
+                <td colspan="3" id="note"></td>
+            </tr>
+            <tr>
+                <th>Opis radova</th>
+                <td colspan="3" id="description" class="description"></td>
+            </tr>
+            <tr>
+                <th>Ukupna cena</th>
+                <td colspan="3" id="price"></td>
+            </tr>
+        </table>
+        <div class="footer">
+            <div>Primio na servis</div>
+            <div>Preuzeo sa servisa</div>
+        </div>
+    </div>
+
+    <button class="download-btn" onclick="downloadPDF()">Preuzmi PDF</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        const data = JSON.parse(`<%- JSON.stringify(productionOrders) %>`);
+
+
+        document.getElementById("orderNumber").innerText = data[0].number;
+        document.getElementById("orderDate").innerText = new Date(data[0].created_at).toLocaleDateString();
+        document.getElementById("owner").innerText = `${data[0].first_name} ${data[0].last_name}`;
+        document.getElementById("plateNumber").innerText = data[0].plate_number;
+        document.getElementById("chassisNumber").innerText = data[0].chassis_number;
+        document.getElementById("mileage").innerText = data[0].mileage + " km";
+        document.getElementById("note").innerText = data[0].note;
+        document.getElementById("description").innerText = data[0].description;
+        document.getElementById("price").innerText = data[0].price + " KM";
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            html2canvas(document.getElementById("invoice")).then(canvas => {
+                const imgData = canvas.toDataURL("image/png");
+                const doc = new jsPDF({ format: "a4" });
+                doc.addImage(imgData, "PNG", 10, 10, 190, 277);
+                doc.save("Servisni_Nalog.pdf");
+            });
+        }
+    </script>
+</body>
+
+</html>

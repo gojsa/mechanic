@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +10,15 @@
     <link rel="stylesheet" href="/css/modal.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
+
 <body>
     <h1 class="header">Proizvodni Nalozi</h1>
-
-    <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search...">
-        <button onclick="searchTable()">Search</button>
+    <div action="" class="user-form">
+        <div class="form-group">
+            <label for="search" class="form-label">Pretrazi naloge:</label>
+            <input class="form-input" type="text" id="search-input" placeholder="Pretrazi...">
+        </div>
+        <button class="form-button" onclick="searchTable()">Pretrazi</button>
     </div>
 
     <table class="user-table">
@@ -29,6 +33,7 @@
                 <th>Napomena</th>
                 <th>Opis</th>
                 <th>Cena</th>
+                <th>Datum</th>
                 <th>Akcije</th>
             </tr>
         </thead>
@@ -47,22 +52,22 @@
     <!-- Include the modal -->
     <%- include('updateProduction') %>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let currentPage = `<%= currentPage %>`;
-            const limit = 10; // Number of items per page
-            let totalPages = `<%= totalPages %>`;
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                let currentPage = `<%= currentPage %>`;
+                const limit = 10; // Number of items per page
+                let totalPages = `<%= totalPages %>`;
 
-            const jsonData = JSON.parse(`<%- JSON.stringify(productionOrders) %>`);
-            console.log(jsonData);
-            renderTable(jsonData);
-            updatePageInfo();
+                const jsonData = JSON.parse(`<%- JSON.stringify(productionOrders) %>`);
+                console.log(jsonData);
+                renderTable(jsonData);
+                updatePageInfo();
 
-            function renderTable(productionOrders) {
-                const tbody = document.getElementById('production-order-table-body');
-                tbody.innerHTML = '';
-                productionOrders.forEach(order => {
-                    const row = `<tr>
+                function renderTable(productionOrders) {
+                    const tbody = document.getElementById('production-order-table-body');
+                    tbody.innerHTML = '';
+                    productionOrders.forEach(order => {
+                        const row = `<tr ondblclick="redirectToOrder(${order.production_order_id})">
                         <td>${order.number}</td>
                         <td>${order.chassis_number}</td>
                         <td>${order.plate_number}</td>
@@ -72,104 +77,108 @@
                         <td>${order.note}</td>
                         <td>${order.description}</td>
                         <td>${order.price}</td>
+                        <td>${order.created_at}</td>
                         <td>
                             <i class="fa fa-edit" style="font-size:24px;color: lightgreen; cursor: pointer;" onclick='openUpdateProductionOrderModal(${JSON.stringify(order)})'></i>
                             <i class="fa fa-trash-o" style="font-size:24px; color: red;cursor: pointer;" onclick="deleteProductionOrder(${order.production_order_id})"></i>
                         </td>
                     </tr>`;
-                    tbody.innerHTML += row;
-                });
-            }
-
-            function updatePageInfo() {
-                const pageInfo = document.getElementById('page-info');
-                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-            }
-
-            window.prevPage = function() {
-                if (currentPage > 1) {
-                    currentPage--;
-                    fetchData();
-                }
-            }
-
-            window.nextPage = function() {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    fetchData();
-                }
-            }
-
-            window.searchTable = function() {
-                currentPage = 1;
-                fetchData();
-            }
-
-            function fetchData() {
-                const search = document.getElementById('search-input').value;
-                fetch(`/api/productionOrder/allProductions?page=${currentPage}&limit=${limit}&search=${search}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        jsonData.length = 0;
-                        jsonData.push(...data.productionOrders);
-                        totalPages = data.totalPages;
-                        renderTable(jsonData);
-                        updatePageInfo();
+                        tbody.innerHTML += row;
                     });
-            }
+                }
+                window.redirectToOrder = function (orderId) {
+                    window.location.href = `/api/productionOrder/detail/${orderId}`;
+                }
+                function updatePageInfo() {
+                    const pageInfo = document.getElementById('page-info');
+                    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+                }
 
-            window.deleteProductionOrder = async function(orderId) {
-                if (confirm('Da li ste sigurno da zelite obrisati nalog?')) {
-                    const response = await fetch(`/api/productionOrder/${orderId}`, {
-                        method: 'DELETE'
-                    });
-                    if (response.ok) {
+                window.prevPage = function () {
+                    if (currentPage > 1) {
+                        currentPage--;
                         fetchData();
+                    }
+                }
+
+                window.nextPage = function () {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        fetchData();
+                    }
+                }
+
+                window.searchTable = function () {
+                    currentPage = 1;
+                    fetchData();
+                }
+
+                function fetchData() {
+                    const search = document.getElementById('search-input').value;
+                    fetch(`/api/productionOrder/allProductions?page=${currentPage}&limit=${limit}&search=${search}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            jsonData.length = 0;
+                            jsonData.push(...data.productionOrders);
+                            totalPages = data.totalPages;
+                            renderTable(jsonData);
+                            updatePageInfo();
+                        });
+                }
+
+                window.deleteProductionOrder = async function (orderId) {
+                    if (confirm('Da li ste sigurno da zelite obrisati nalog?')) {
+                        const response = await fetch(`/api/productionOrder/${orderId}`, {
+                            method: 'DELETE'
+                        });
+                        if (response.ok) {
+                            fetchData();
+                        } else {
+                            alert('Doslo je do greske');
+                        }
+                    }
+                }
+
+                window.openUpdateProductionOrderModal = function (order) {
+                    console.log('Open update modal for order:', order);
+                    document.getElementById('update_order_id').value = order.production_order_id;
+                    document.getElementById('update_order_mileage').value = order.mileage;
+                    document.getElementById('update_order_note').value = order.note;
+                    document.getElementById('update_order_description').value = order.description;
+                    document.getElementById('update_order_price').value = order.price;
+                    document.getElementById('updateProductionOrderModal').style.display = 'block';
+                }
+
+                window.closeUpdateProductionOrderModal = function () {
+                    document.getElementById('updateProductionOrderModal').style.display = 'none';
+                }
+
+                window.updateProductionOrderApi = async function () {
+                    const orderId = document.getElementById('update_order_id').value;
+                    const mileage = document.getElementById('update_order_mileage').value;
+                    const note = document.getElementById('update_order_note').value;
+                    const description = document.getElementById('update_order_description').value;
+                    const price = document.getElementById('update_order_price').value;
+
+                    const response = await fetch(`/api/productionOrder/${orderId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ mileage, note, description, price })
+                    });
+
+                    if (response.ok) {
+                        alert('Uspjesno ste izmjenili nalog');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
                     } else {
                         alert('Doslo je do greske');
                     }
                 }
-            }
-
-            window.openUpdateProductionOrderModal = function(order) {
-                console.log('Open update modal for order:', order);
-                document.getElementById('update_order_id').value = order.production_order_id;
-                document.getElementById('update_order_mileage').value = order.mileage;
-                document.getElementById('update_order_note').value = order.note;
-                document.getElementById('update_order_description').value = order.description;
-                document.getElementById('update_order_price').value = order.price;
-                document.getElementById('updateProductionOrderModal').style.display = 'block';
-            }
-
-            window.closeUpdateProductionOrderModal = function() {
-                document.getElementById('updateProductionOrderModal').style.display = 'none';
-            }
-
-            window.updateProductionOrderApi = async function() {
-                const orderId = document.getElementById('update_order_id').value;
-                const mileage = document.getElementById('update_order_mileage').value;
-                const note = document.getElementById('update_order_note').value;
-                const description = document.getElementById('update_order_description').value;
-                const price = document.getElementById('update_order_price').value;
-
-                const response = await fetch(`/api/productionOrder/${orderId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ mileage, note, description, price })
-                });
-
-                if (response.ok) {
-                    alert('Uspjesno ste izmjenili nalog');
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                } else {
-                    alert('Doslo je do greske');
-                }
-            }
-        });
-    </script>
+            });
+        </script>
 </body>
+
 </html>

@@ -141,37 +141,15 @@ const findAllProductionOrdersTable = asyncHandler(async (req, res) => {
 	 c.mileage,
 	 p.note,
 	 p.description,
-	 p.created_at
+	 p.created_at,
+     p.price
 	 from production_order as p 
 	 join "user" as u  on u.user_id = p.user_id
 	 join "car" as c on c.car_id = p.car_id
+     order by p.created_at desc
     limit ${limit} offset ${offset}
    `
     const productionOrders = await db.sequelize.query(query, { type: QueryTypes.SELECT });
-    // const productionOrders = await ProductionOrder.findAndCountAll({
-    //     include: [
-    //         {
-    //             model: User,
-    //             where: {
-    //                 [Op.or]: [
-    //                     { first_name: { [Op.like]: `%${search}%` } },
-    //                     { last_name: { [Op.like]: `%${search}%` } }
-    //                 ]
-    //             }
-    //         },
-    //         {
-    //             model: Car,
-    //             where: {
-    //                 [Op.or]: [
-    //                     { chassis_number: { [Op.like]: `%${search}%` } },
-    //                     { plate_number: { [Op.like]: `%${search}%` } }
-    //                 ]
-    //             }
-    //         }
-    //     ],
-    //     limit: parseInt(limit),
-    //     offset: parseInt(offset)
-    // });
 
     if (!productionOrders) {
         res.status(404).json({ message: "Nalozi nisu pronadjeni!" });
@@ -213,7 +191,8 @@ const query = `
 	 c.mileage,
 	 p.note,
 	 p.description,
-	 p.created_at
+	 p.created_at,
+     p.price
 	 from production_order as p 
 	 join "user" as u  on u.user_id = p.user_id
 	 join "car" as c on c.car_id = p.car_id
@@ -224,6 +203,7 @@ const query = `
 	or u.last_name ilike '%${search}%' 
 	or c.plate_number ilike '%${search}%'
  )
+    order by p.created_at desc
     limit ${limit} offset ${offset}
 
 `
@@ -262,4 +242,37 @@ const carProduction = asyncHandler(async (req, res) => {
     });
 });
 
-module.exports = {findAllProductionOrdersTable, createProductionOrder, updateProductionOrder, deleteProductionOrder, getProductionOrders, findAllProductionOrders, carProduction };
+
+const detailProduction = asyncHandler(async (req, res) => {
+    const production_order_id = req.params.production_order_id;
+
+    
+   const query = `
+   SELECT 
+    p.production_order_id,
+    p.number,
+    c.chassis_number,
+    c.plate_number,
+    u.first_name,
+    u.last_name,
+    c.mileage,
+    p.note,
+    p.description,
+    p.created_at,
+    p.price
+    from production_order as p 
+    join "user" as u  on u.user_id = p.user_id
+    join "car" as c on c.car_id = p.car_id
+    where p.production_order_id = ${production_order_id}
+  `
+   const productionOrders = await db.sequelize.query(query, { type: QueryTypes.SELECT });
+
+    
+   if (!productionOrders) {
+    res.status(404).json({ message: "Nalozi nisu pronadjeni!" });
+}
+res.render("productionOrder/productionDetail", {
+    productionOrders
+});
+})
+module.exports = {findAllProductionOrdersTable, createProductionOrder, updateProductionOrder, deleteProductionOrder, getProductionOrders, findAllProductionOrders, carProduction,detailProduction };
