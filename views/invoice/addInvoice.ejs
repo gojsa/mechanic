@@ -1,0 +1,243 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+    <title>Faktura</title>
+</head>
+
+<body>
+    <style>
+        .main-container {
+            padding: 20px;
+        }
+    </style>
+    <div class="main-container">
+        <form class="form-group" action="#" onsubmit="handleFormSubmit(event)" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="jib">JIB:</label>
+                <input class="form-input" type="text" id="jib" name="jib" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="payment_date">Payment Date:</label>
+                <input class="form-input" type="date" id="payment_date" name="payment_date" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="activated_date">Activated Date:</label>
+                <input class="form-input" type="date" id="activated_date" name="activated_date" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="note">Note:</label>
+                <textarea class="form-input" id="note" name="note" required></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="pdv">PDV:</label>
+                <div>
+                    <input type="radio" id="pdv_0" name="pdv" value="0" required>
+                    <label for="pdv_0">0%</label>
+                </div>
+                <div>
+                    <input type="radio" id="pdv_17" name="pdv" value="17" required>
+                    <label for="pdv_17">17%</label>
+                </div>
+            </div>
+            <button class="form-button" type="submit">Dodaj predracun</button>
+        </form>
+    </div>
+
+    <script>
+
+const invoice = JSON.parse(`<%- JSON.stringify(invoice) %>`);
+console.log(invoice);
+const invoiceArticle = JSON.parse(`<%- JSON.stringify(invoiceArticle) %>`);
+console.log(invoiceArticle);
+    const urlParams = new URLSearchParams(window.location.search);
+    const production_order_id = urlParams.get('production_order_id');
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const jib = document.getElementById('jib').value;
+            const paymentDate = document.getElementById('payment_date').value;
+            const activatedDate = document.getElementById('activated_date').value;
+            const note = document.getElementById('note').value;
+            const pdv = document.querySelector('input[name="pdv"]:checked').value;
+            const response = await fetch('/api/invoice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ jib, payment_date: paymentDate, activated_date: activatedDate, note, pdv, production_order_id })
+            });
+
+            if (response.ok) {
+                alert('Invoice successfully added');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                alert('An error occurred');
+            }
+        }
+    </script>
+</body>
+
+</html> -->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+    <title>Faktura</title>
+</head>
+
+<body>
+    <style>
+        .main-container {
+            padding: 20px;
+        }
+    </style>
+    <div class="main-container" id="invoiceFormContainer">
+        <form class="form-group" action="#" onsubmit="handleFormSubmit(event)" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="jib">JIB:</label>
+                <input class="form-input" type="text" id="jib" name="jib" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="payment_date">Payment Date:</label>
+                <input class="form-input" type="date" id="payment_date" name="payment_date" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="activated_date">Activated Date:</label>
+                <input class="form-input" type="date" id="activated_date" name="activated_date" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="note">Note:</label>
+                <textarea class="form-input" id="note" name="note" required></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="pdv">PDV:</label>
+                <div>
+                    <input type="radio" id="pdv_0" name="pdv" value="0" required>
+                    <label for="pdv_0">0%</label>
+                </div>
+                <div>
+                    <input type="radio" id="pdv_17" name="pdv" value="17" required>
+                    <label for="pdv_17">17%</label>
+                </div>
+            </div>
+            <button class="form-button" type="submit">Dodaj predracun</button>
+        </form>
+    </div>
+
+    <div class="main-container" id="invoiceArticleFormContainer" style="display: none;">
+        <form class="form-group" action="#" onsubmit="handleArticleFormSubmit(event)" method="POST">
+          
+            <div class="form-group">
+                <label class="form-label" for="article_name">Naziv usluge:</label>
+                <input class="form-input" type="text" id="article_name" name="article_name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="amount">Kolicina:</label>
+                <input class="form-input" type="text" id="amount" name="amount" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="price_with_vat">Cijena:</label>
+                <input class="form-input" type="number" step="0.01" id="price_with_vat" name="price_with_vat" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="discount">Popust:</label>
+                <input class="form-input" type="text" id="discount" name="discount" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="unit_of_measure">Jedinica mjere:</label>
+                <input class="form-input" type="text" id="unit_of_measure" name="unit_of_measure" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="article_note">Napomena:</label>
+                <textarea class="form-input" id="article_note" name="article_note" required></textarea>
+            </div>
+            <button class="form-button" type="submit">Dodaj artikal</button>
+        </form>
+    </div>
+
+    <script>
+        const invoice = JSON.parse(`<%- JSON.stringify(invoice) %>`);
+        const invoiceArticle = JSON.parse(`<%- JSON.stringify(invoiceArticle) %>`);
+
+        if (invoice.length === 0 && invoiceArticle.length === 0) {
+            document.getElementById('invoiceFormContainer').style.display = 'block';
+            document.getElementById('invoiceArticleFormContainer').style.display = 'none';
+        } else if (invoice.length > 0 && invoiceArticle.length === 0) {
+            document.getElementById('invoiceFormContainer').style.display = 'none';
+            document.getElementById('invoiceArticleFormContainer').style.display = 'block';
+        } else {
+            document.getElementById('invoiceFormContainer').style.display = 'none';
+            document.getElementById('invoiceArticleFormContainer').style.display = 'none';
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const jib = document.getElementById('jib').value;
+            const paymentDate = document.getElementById('payment_date').value;
+            const activatedDate = document.getElementById('activated_date').value;
+            const note = document.getElementById('note').value;
+            const pdv = document.querySelector('input[name="pdv"]:checked').value;
+
+            const response = await fetch('/api/invoice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ jib, payment_date: paymentDate, activated_date: activatedDate, note, pdv })
+            });
+
+            if (response.ok) {
+                alert('Invoice successfully added');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                alert('An error occurred');
+            }
+        }
+
+        async function handleArticleFormSubmit(event) {
+            event.preventDefault();
+
+            const articleName = document.getElementById('article_name').value;
+            const amount = document.getElementById('amount').value;
+            const priceWithVat = document.getElementById('price_with_vat').value;
+            const discount = document.getElementById('discount').value;
+            const unitOfMeasure = document.getElementById('unit_of_measure').value;
+            const articleNote = document.getElementById('article_note').value;
+
+            const response = await fetch('/api/invoiceArticle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ invoice_id: invoiceId, article_name: articleName, amount, price_with_vat: priceWithVat, price_with_out_vat: priceWithoutVat, vat, discount, unit_of_measure: unitOfMeasure, note: articleNote })
+            });
+
+            if (response.ok) {
+                alert('Article successfully added');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                alert('An error occurred');
+            }
+        }
+    </script>
+</body>
+
+</html>

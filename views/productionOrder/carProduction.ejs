@@ -35,7 +35,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const jsonData = JSON.parse(`<%- JSON.stringify(productionOrders) %>`);
-            console.log(jsonData);
             renderTable(jsonData);
 
             function renderTable(productionOrders) {

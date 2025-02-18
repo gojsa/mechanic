@@ -2,11 +2,17 @@ const { type } = require('os');
 const { Sequelize, DataTypes } = require('sequelize');
 
 module.exports = (sequelize, Sequelize) => {
-    const ProductionOrder = sequelize.define('production_order', {
-        production_order_id: {
+    const Invoice = sequelize.define('invoice', {
+        invoice_id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true
+        },
+        number: {
+            type: DataTypes.STRING,
+        },
+        production_order_id: {
+            type: DataTypes.INTEGER,
         },
         user_id: {
             type: DataTypes.INTEGER,
@@ -14,29 +20,31 @@ module.exports = (sequelize, Sequelize) => {
         car_id: {
             type: DataTypes.INTEGER,
         },
-        number: {
+        name: {
             type: DataTypes.STRING,
         },
-        mileage: {
+        jib: {
+            type: DataTypes.STRING,
+        },
+        offer_number: {
+            type: DataTypes.STRING,
+        },
+        payment_date: {
+            type: DataTypes.DATE,
+        },
+        activated_date: {
+            type: DataTypes.DATE,
+        },
+        vat: {
             type: DataTypes.STRING,
         },
         note: {
             type: DataTypes.TEXT,
-        },
-        description: {
-            type: DataTypes.TEXT,
-        },
-        price: {
-            type: DataTypes.STRING,
-        },
-        status: {
-            type: DataTypes.STRING,
-            defaultValue: "OPEN"
         },
     }, {
         timestamps: true,
         createdAt: "created_at",
         updatedAt: "updated_at"
     });
-    return ProductionOrder;
+    return Invoice;
 }

@@ -95,25 +95,6 @@ const getProductionOrders = asyncHandler(async (req, res) => {
     });
 });
 
-// const findAllProductionOrders = asyncHandler(async (req, res) => {
-//     const productionOrders = await ProductionOrder.findAll({
-//         include: [
-//             {
-//                 model: User
-//             },
-//             {
-//                 model: Car
-//             }
-//         ]
-//     });
-
-//     if (!productionOrders) {
-//         res.status(404).json({ message: "Nalozi nisu pronadjeni!" });
-//     }
-//     res.render("productionOrder/allProductions", {
-//         productionOrders
-//     });
-// });
 
 const findAllProductionOrdersTable = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, search = '' } = req.query;
@@ -130,7 +111,7 @@ const findAllProductionOrdersTable = asyncHandler(async (req, res) => {
     const productionOrdersCount = await db.sequelize.query(queryCount, { type: QueryTypes.SELECT });
 
 
-   const query = `
+    const query = `
     SELECT 
 	 p.production_order_id,
 	 p.number,
@@ -180,7 +161,7 @@ const findAllProductionOrders = asyncHandler(async (req, res) => {
     `;
     const productionOrdersCount = await db.sequelize.query(queryCount, { type: QueryTypes.SELECT });
 
-const query = `
+    const query = `
  SELECT 
 	 p.production_order_id,
 	 p.number,
@@ -229,7 +210,7 @@ const carProduction = asyncHandler(async (req, res) => {
                 model: Car
             }
         ],
-        where:{
+        where: {
             car_id
         }
     });
@@ -246,8 +227,8 @@ const carProduction = asyncHandler(async (req, res) => {
 const detailProduction = asyncHandler(async (req, res) => {
     const production_order_id = req.params.production_order_id;
 
-    
-   const query = `
+
+    const query = `
    SELECT 
     p.production_order_id,
     p.number,
@@ -265,14 +246,14 @@ const detailProduction = asyncHandler(async (req, res) => {
     join "car" as c on c.car_id = p.car_id
     where p.production_order_id = ${production_order_id}
   `
-   const productionOrders = await db.sequelize.query(query, { type: QueryTypes.SELECT });
+    const productionOrders = await db.sequelize.query(query, { type: QueryTypes.SELECT });
 
-    
-   if (!productionOrders) {
-    res.status(404).json({ message: "Nalozi nisu pronadjeni!" });
-}
-res.render("productionOrder/productionDetail", {
-    productionOrders
-});
+
+    if (!productionOrders) {
+        res.status(404).json({ message: "Nalozi nisu pronadjeni!" });
+    }
+    res.render("productionOrder/productionDetail", {
+        productionOrders
+    });
 })
-module.exports = {findAllProductionOrdersTable, createProductionOrder, updateProductionOrder, deleteProductionOrder, getProductionOrders, findAllProductionOrders, carProduction,detailProduction };
+module.exports = { findAllProductionOrdersTable, createProductionOrder, updateProductionOrder, deleteProductionOrder, getProductionOrders, findAllProductionOrders, carProduction, detailProduction };
