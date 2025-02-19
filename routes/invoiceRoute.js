@@ -9,7 +9,8 @@ const {
     allInvoices,
     redirectToAll,
     updateInvoice,
-    pdfInvoice
+    pdfInvoice,
+    deleteInvoice
 } = require("../controllers/invoiceController");
 
 // invoicePdf
@@ -21,6 +22,7 @@ router.post("/", createInovice);
 router.post("/create-invoice-article", createInvoiceArticle);
 router.put("/update-status", updateInvoiceStatus);
 router.put("/update-invoice/:invoice_id", updateInvoice);
+router.delete("/:invoice_id", deleteInvoice);
 
 
 module.exports = router;

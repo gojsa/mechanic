@@ -199,6 +199,14 @@ const updateInvoice = asyncHandler(async (req, res) => {
     if (!findInvoice) {
         res.status(500).json({ message: "Faktura nije pronadjena!" });
     }
+    const findInvoiceArticle = await InvoiceArticle.findAll({
+        where: {
+            invoice_id
+        }
+    });
+    if(findInvoiceArticle.length === 0){
+        res.status(500).json({ message: "Faktura nema artikala!" });
+    }
     if (findInvoice.status != status) {
         const updateProduction = await ProductionOrder.update({
             status
@@ -267,4 +275,30 @@ const pdfInvoice = asyncHandler(async (req, res) => {
         invoiceArticle
     });
 });
-module.exports = { pdfInvoice, updateInvoice, renderInvoice, createInovice, updateInvoiceStatus, createInvoiceArticle, allInvoices, redirectToAll };
+
+const deleteInvoice = asyncHandler(async (req, res) => {
+    const invoice_id = req.params.invoice_id;
+    const findInvoice = await Invoice.findByPk(invoice_id);
+    if (!findInvoice) {
+        res.status(500).json({ message: "Faktura nije pronadjena!" });
+    }
+    const updateProduction = await ProductionOrder.update({
+        status: "OPEN"
+    }, {
+        where: {
+            production_order_id: findInvoice.production_order_id
+        }
+    });
+    if (!updateProduction) {
+        res.status(500).json({ message: "Nalog nije pronadjen!" });
+    }
+    const deleteInvoice = await Invoice.destroy({
+        where: {
+            invoice_id
+        }
+    });
+    if (!deleteInvoice) {
+        res.status(500).json({ message: "Faktura nije obrisana!" });
+    }
+});
+module.exports = {deleteInvoice, pdfInvoice, updateInvoice, renderInvoice, createInovice, updateInvoiceStatus, createInvoiceArticle, allInvoices, redirectToAll };

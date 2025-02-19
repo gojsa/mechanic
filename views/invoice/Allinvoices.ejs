@@ -131,7 +131,8 @@
                     method: 'DELETE'
                 });
                 if (response.ok) {
-                    fetchInvoices();
+                    alert('Faktura je uspesno obrisana');
+                    window.location.reload();
                 } else {
                     alert('Doslo je do greske');
                 }
