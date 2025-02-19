@@ -128,7 +128,7 @@ const findAllProductionOrdersTable = asyncHandler(async (req, res) => {
 	 join "user" as u  on u.user_id = p.user_id
 	 join "car" as c on c.car_id = p.car_id
      order by p.created_at desc
-    limit ${limit} offset ${offset}
+    limit ${limit } offset ${offset}
    `
     const productionOrders = await db.sequelize.query(query, { type: QueryTypes.SELECT });
 

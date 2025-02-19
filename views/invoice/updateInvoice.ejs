@@ -1,0 +1,85 @@
+<div id="updateInvoiceModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeUpdateInvoiceModal()">&times;</span>
+        <h2>Izmjeni račun</h2>
+        <form class="form-group" action="#" onsubmit="handleUpdateInvoiceFormSubmit(event)" method="POST">
+            <input type="hidden" id="update_invoice_id" name="invoice_id">
+        
+            <div class="form-group">
+                <label class="form-label" for="update_payment_date">Payment Date:</label>
+                <input class="form-input" type="date" id="update_payment_date" name="payment_date" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_activated_date">Activated Date:</label>
+                <input class="form-input" type="date" id="update_activated_date" name="activated_date" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_note">Note:</label>
+                <textarea class="form-input" id="update_note" name="note" required></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="update_status">Status:</label>
+                <select class="form-input" id="update_status" name="status" required>
+                    <option value="OPEN">OPEN</option>
+                    <option value="CLOSED">CLOSED</option>
+                </select>
+            </div>
+
+            <button class="form-button" type="submit">Izmjeni racun</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openUpdateInvoiceModal(invoice) {
+        document.getElementById('update_invoice_id').value = invoice.invoice_id;
+
+        if (invoice.payment_date) {
+            document.getElementById('update_payment_date').value = new Date(invoice.payment_date).toISOString().split('T')[0];
+        } else {
+            document.getElementById('update_payment_date').value = '';
+        }
+
+        if (invoice.activated_date) {
+            document.getElementById('update_activated_date').value = new Date(invoice.activated_date).toISOString().split('T')[0];
+        } else {
+            document.getElementById('update_activated_date').value = '';
+        }
+
+        document.getElementById('update_note').value = invoice.note;
+        document.getElementById('update_status').value = invoice.status;
+
+        document.getElementById('updateInvoiceModal').style.display = 'block';
+    }
+
+    function closeUpdateInvoiceModal() {
+        document.getElementById('updateInvoiceModal').style.display = 'none';
+    }
+
+    async function handleUpdateInvoiceFormSubmit(event) {
+        event.preventDefault();
+
+        const invoiceId = document.getElementById('update_invoice_id').value;
+        const paymentDate = document.getElementById('update_payment_date').value;
+        const activatedDate = document.getElementById('update_activated_date').value;
+        const note = document.getElementById('update_note').value;
+        const status = document.getElementById('update_status').value;
+
+        const response = await fetch(`/api/invoice/update-invoice/${invoiceId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ payment_date: paymentDate, activated_date: activatedDate, note, status })
+        });
+
+        if (response.ok) {
+            alert('Racun uspjesno izmjenjen');
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        } else {
+            alert('An error occurred');
+        }
+    }
+</script>
