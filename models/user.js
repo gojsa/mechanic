@@ -20,6 +20,9 @@ module.exports = (sequelize, Sequelize) => {
         phone_number: {
             type: DataTypes.STRING,
         },
+        jib: {
+            type: DataTypes.STRING,
+        },
         birth_date: {
             type: DataTypes.DATE,
         },

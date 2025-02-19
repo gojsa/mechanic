@@ -49,4 +49,10 @@ db.invoice.belongsTo(db.productionOrder, { foreignKey: 'production_order_id' });
 
 db.invoice.hasMany(db.invoiceArticle, { foreignKey: 'invoice_id' });
 db.invoice.belongsTo(db.invoice, { foreignKey: 'invoice_id' });
+
+db.car.hasMany(db.invoice, { foreignKey: 'car_id' });
+db.invoice.belongsTo(db.car, { foreignKey: 'car_id' });
+
+db.user.hasMany(db.invoice, { foreignKey: 'user_id' });
+db.invoice.belongsTo(db.user, { foreignKey: 'user_id' });
 module.exports = db

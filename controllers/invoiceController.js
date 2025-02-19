@@ -6,29 +6,42 @@ const ProductionOrder = db.productionOrder;
 const Invoice = db.invoice;
 const InvoiceArticle = db.invoiceArticle;
 const { Op, QueryTypes, where } = require("sequelize");
-
+let invoiceArticle
 
 const renderInvoice = asyncHandler(async (req, res) => {
     const production_order_id = req.query.production_order_id;
 
     const invoice = await Invoice.findAll({
+        include:[{
+            model: User,
+        },
+    {
+        model: Car
+    }],
         where: {
             production_order_id
         }
     });
 
+  
+
 
     if (!invoice) {
         res.status(500).json({ message: "Nalozi nisu pronadjeni!" });
     }
-    const invoiceArticle = await InvoiceArticle.findAll({
-        where: {
-            invoice_id: invoice[0].invoice_id
+    if(invoice.length > 0){
+         invoiceArticle = await InvoiceArticle.findAll({
+            where: {
+                invoice_id: invoice[0].invoice_id
+            }
+        });
+        if(!invoiceArticle){
+            res.status(500).json({ message: "Nalozi nisu pronadjeni!" });
         }
-    });
-    if(!invoiceArticle){
-        res.status(500).json({ message: "Nalozi nisu pronadjeni!" });
+    }else{
+        invoiceArticle = []
     }
+
     res.render("invoice/addinvoice", {
         invoice,
         invoiceArticle
@@ -40,7 +53,6 @@ const createInovice = asyncHandler(async (req, res) => {
     const payment_date = req.body.payment_date;
     const activated_date = req.body.activated_date;
     const note = req.body.note;
-    const jib = req.body.jib;
     try {
         let number;
         const findInvoice = await Invoice.findOne({
@@ -65,8 +77,7 @@ const createInovice = asyncHandler(async (req, res) => {
             number,
             payment_date,
             activated_date,
-            note,
-            jib
+            note
         });
 
         if (!invoice) {
@@ -78,4 +89,51 @@ const createInovice = asyncHandler(async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-module.exports = { renderInvoice, createInovice };
+
+const updateInvoiceStatus = asyncHandler(async (req, res) => {
+    const invoice_id = req.body.invoice_id;
+
+    const invoice = await Invoice.update({
+        status: "CLOSED"
+    }, {
+        where: {
+            invoice_id
+        }
+    })
+
+    if(!invoice){
+        res.status(500).json({ message: "Faktura nije pronadjena!" });
+    }
+    res.status(200).json({ message: "Faktura je zatvorena!" });
+});
+
+const createInvoiceArticle = asyncHandler(async (req, res) => {
+    const amount = req.body.amount;
+    const price_with_vat = req.body.price_with_vat;
+    const invoice_id = req.body.invoice_id;
+    const article_name = req.body.article_name;
+    const note = req.body.note;
+    const unit_of_measure = req.body.unit_of_measure;
+    const discount = req.body.discount;
+    const invoiceArticle = await InvoiceArticle.create({
+        amount,
+        price_with_vat,
+        price_with_out_vat: 0,
+        invoice_id,
+        article_name,
+        note,
+        unit_of_measure,
+        discount
+    });
+    if (!invoiceArticle) {
+        res.status(500).json({ message: "Artikal nije kreiran!" });
+    }
+    res.status(201).json({ invoiceArticle });
+})
+
+const allInvoices = asyncHandler(async (req, res) => {
+    const query = `
+    
+    `
+});
+module.exports = { renderInvoice, createInovice,updateInvoiceStatus,createInvoiceArticle };

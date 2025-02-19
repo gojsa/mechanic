@@ -15,6 +15,10 @@
                 <input class="form-input" type="number" id="create_jmbg" name="jmbg" >
             </div>
             <div class="form-group">
+                <label class="form-label" for="create_jib">JIB:</label>
+                <input class="form-input" type="number" id="create_jib" name="jib" >
+            </div>
+            <div class="form-group">
                 <label class="form-label" for="create_birth_date">Datum rodjenja:</label>
                 <input class="form-input" type="date" id="create_birth_date" name="birth_date" >
             </div>
@@ -47,13 +51,14 @@
         const birthDate = document.getElementById('create_birth_date').value;
         const phone_number = document.getElementById('create_phone').value;
         const email = document.getElementById('create_email').value;
+        const jib = document.getElementById('create_jib').value;
 
         const response = await fetch('/api/user', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ first_name: firstName, last_name: lastName, jmbg, birth_date: birthDate, email,phone_number })
+            body: JSON.stringify({ first_name: firstName, last_name: lastName, jmbg, birth_date: birthDate, email,phone_number, jib })
         });
 
         if (response.ok) {

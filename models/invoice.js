@@ -41,6 +41,10 @@ module.exports = (sequelize, Sequelize) => {
         note: {
             type: DataTypes.TEXT,
         },
+        status: {
+            type: DataTypes.STRING,
+            defaultValue: "OPEN"
+        },
     }, {
         timestamps: true,
         createdAt: "created_at",

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Račun/Otpremnica</title>
+ 
+</head>
+<body>
+    <div class="container" id="invoice">
+        <div class="header">
+            <h1>AUTOMEHANIČAR MIHA</h1>
+            <p>PRIZRENSKA 145A</p>
+            <p>Telefon: 065-426-700</p>
+            <p>JIB: 123456789</p>
+            <p>Ž.R: 552-000-21259047-34</p>
+        </div>
+        <h2>Račun/Otpremnica</h2>
+        <table>
+            <tr>
+                <th>Broj računa</th>
+                <td id="invoiceNumber"></td>
+                <th>Datum izdavanja</th>
+                <td id="invoiceDate"></td>
+            </tr>
+            <tr>
+                <th>Vlasnik</th>
+                <td id="owner"></td>
+                <th>JIB</th>
+                <td id="jib"></td>
+            </tr>
+            <tr>
+                <th>Vozilo</th>
+                <td colspan="3" id="car"></td>
+            </tr>
+            <tr>
+                <th>Napomena</th>
+                <td colspan="3" id="note"></td>
+            </tr>
+        </table>
+        <h3>Stavke</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Naziv artikla</th>
+                    <th>Količina</th>
+                    <th>Cena sa PDV-om</th>
+                </tr>
+            </thead>
+            <tbody id="items"></tbody>
+        </table>
+        <div class="total">Ukupno za platiti: <span id="totalAmount"></span> EUR</div>
+        <div class="footer">
+            <div>Fakturirao</div>
+            <div>Preuzeo</div>
+        </div>
+    </div>
+    <button onclick="downloadPDF()" style="margin: 20px; padding: 10px 20px; font-size: 16px;">Preuzmi PDF</button>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        const invoiceData = {
+            "invoice_id": 9,
+            "number": "0002/25",
+            "payment_date": "2025-02-05T00:00:00.000Z",
+            "activated_date": "2025-02-19T00:00:00.000Z",
+            "note": "dasd",
+            "status": "CLOSED",
+            "user": {
+                "first_name": "Zoka Gojsa",
+                "last_name": "Blagojevic",
+                "jib": "123456789"
+            },
+            "car": {
+                "chassis_number": "224554",
+                "name": "BMW 3",
+                "plate_number": "245-G-987"
+            }
+        };
+
+        const invoiceItems = [
+            { "invoice_article_id": 1, "article_name": "Mjenjanje gume", "amount": "1", "price_with_vat": "40.00" },
+            { "invoice_article_id": 2, "article_name": "Mjenjao lezaj", "amount": "2", "price_with_vat": "80.00" },
+            { "invoice_article_id": 3, "article_name": "Vario auspuh", "amount": "1", "price_with_vat": "50.00" }
+        ];
+
+        document.getElementById("invoiceNumber").innerText = invoiceData.number;
+        document.getElementById("invoiceDate").innerText = new Date(invoiceData.activated_date).toLocaleDateString();
+        document.getElementById("owner").innerText = invoiceData.user.first_name + " " + invoiceData.user.last_name;
+        document.getElementById("jib").innerText = invoiceData.user.jib;
+        document.getElementById("car").innerText = invoiceData.car.chassis_number + " - " + invoiceData.car.name + " - " + invoiceData.car.plate_number;
+        document.getElementById("note").innerText = invoiceData.note;
+
+        const itemsTable = document.getElementById("items");
+        let totalAmount = 0;
+
+        invoiceItems.forEach((item, index) => {
+            let row = itemsTable.insertRow();
+            row.insertCell(0).innerText = index + 1;
+            row.insertCell(1).innerText = item.article_name;
+            row.insertCell(2).innerText = item.amount;
+            row.insertCell(3).innerText = item.price_with_vat + " EUR";
+            totalAmount += parseFloat(item.price_with_vat);
+        });
+
+        document.getElementById("totalAmount").innerText = totalAmount.toFixed(2);
+
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            html2canvas(document.getElementById('invoice')).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 210;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                doc.save('racun_otpremnica.pdf');
+            });
+        }
+    </script>
+</body>
+</html>

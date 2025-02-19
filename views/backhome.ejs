@@ -1,0 +1,26 @@
+<style>
+    .btn-bck-home {
+        position: fixed;
+        top: 10px;
+        width: 150px;
+        padding: 9px;
+        left: 10px;
+        background: silver;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+    }
+
+    .btn-bck-home:hover {
+        background: #a09f9f;
+    }
+</style>
+<div>
+    <button class="btn-bck-home" id="btnBckHome">Pocetna</button>
+</div>
+
+<script>
+    document.getElementById('btnBckHome').addEventListener('click', () => {
+        window.location.href = '/';
+    });
+</script>

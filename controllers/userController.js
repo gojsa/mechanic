@@ -93,6 +93,7 @@ const createUser = asyncHandler(async (req, res) => {
     const birth_date = req.body.birth_date;
     const email = req.body.email;
     const phone_number = req.body.phone_number;
+    const jib = req.body.jib;
     if (!first_name || !last_name) {
         res.status(400).json({ message: "Ime i prezime su obavezni podaci!" });
     }
@@ -103,7 +104,8 @@ const createUser = asyncHandler(async (req, res) => {
             jmbg,
             birth_date,
             email,
-            phone_number
+            phone_number,
+            jib
         });
 
         if (!user) {

@@ -1,93 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/main.css">
-    <title>Faktura</title>
-</head>
-
-<body>
-    <style>
-        .main-container {
-            padding: 20px;
-        }
-    </style>
-    <div class="main-container">
-        <form class="form-group" action="#" onsubmit="handleFormSubmit(event)" method="POST">
-            <div class="form-group">
-                <label class="form-label" for="jib">JIB:</label>
-                <input class="form-input" type="text" id="jib" name="jib" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label" for="payment_date">Payment Date:</label>
-                <input class="form-input" type="date" id="payment_date" name="payment_date" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label" for="activated_date">Activated Date:</label>
-                <input class="form-input" type="date" id="activated_date" name="activated_date" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label" for="note">Note:</label>
-                <textarea class="form-input" id="note" name="note" required></textarea>
-            </div>
-            <div class="form-group">
-                <label class="form-label" for="pdv">PDV:</label>
-                <div>
-                    <input type="radio" id="pdv_0" name="pdv" value="0" required>
-                    <label for="pdv_0">0%</label>
-                </div>
-                <div>
-                    <input type="radio" id="pdv_17" name="pdv" value="17" required>
-                    <label for="pdv_17">17%</label>
-                </div>
-            </div>
-            <button class="form-button" type="submit">Dodaj predracun</button>
-        </form>
-    </div>
-
-    <script>
-
-const invoice = JSON.parse(`<%- JSON.stringify(invoice) %>`);
-console.log(invoice);
-const invoiceArticle = JSON.parse(`<%- JSON.stringify(invoiceArticle) %>`);
-console.log(invoiceArticle);
-    const urlParams = new URLSearchParams(window.location.search);
-    const production_order_id = urlParams.get('production_order_id');
-        async function handleFormSubmit(event) {
-            event.preventDefault();
-
-            const jib = document.getElementById('jib').value;
-            const paymentDate = document.getElementById('payment_date').value;
-            const activatedDate = document.getElementById('activated_date').value;
-            const note = document.getElementById('note').value;
-            const pdv = document.querySelector('input[name="pdv"]:checked').value;
-            const response = await fetch('/api/invoice', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ jib, payment_date: paymentDate, activated_date: activatedDate, note, pdv, production_order_id })
-            });
-
-            if (response.ok) {
-                alert('Invoice successfully added');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
-            } else {
-                alert('An error occurred');
-            }
-        }
-    </script>
-</body>
-
-</html> -->
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -95,21 +5,78 @@ console.log(invoiceArticle);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/tables.css">
+    <link rel="stylesheet" href="/css/modal.css">
+    <link rel="stylesheet" href="/css/invoice.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Faktura</title>
 </head>
 
 <body>
+    <%- include('../backhome') %>
     <style>
         .main-container {
             padding: 20px;
         }
     </style>
+    <div class="main-container-pdf" id="main-container-pdf-id">
+        <div class="container" id="invoice">
+            <div class="header-pdf">
+                <h1 class="invoice-h1">AUTOMEHANIČAR MIHA</h1>
+                <p class="invoice-p">PRIZRENSKA 145A</p>
+                <p class="invoice-p">Telefon: 065-426-700</p>
+                <p class="invoice-p">JIB: 123456789</p>
+                <p class="invoice-p">Ž.R: 552-000-21259047-34</p>
+            </div>
+            <h2 class="invoice-h2">Račun/Otpremnica</h2>
+            <table>
+                <tr>
+                    <th>Broj računa</th>
+                    <td id="invoiceNumber"></td>
+                    <th>Datum izdavanja</th>
+                    <td id="invoiceDate"></td>
+                </tr>
+                <tr>
+                    <th>Vlasnik</th>
+                    <td id="owner"></td>
+                    <th>JIB</th>
+                    <td id="jib"></td>
+                </tr>
+                <tr>
+                    <th>Vozilo</th>
+                    <td colspan="3" id="car"></td>
+                </tr>
+                <tr>
+                    <th>Napomena</th>
+                    <td colspan="3" id="note"></td>
+                </tr>
+            </table>
+            <h3>Stavke</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Naziv artikla</th>
+                        <th>Količina</th>
+                        <th>Cena sa PDV-om</th>
+                    </tr>
+                </thead>
+                <tbody id="items"></tbody>
+            </table>
+            <div class="total">Ukupno za platiti: <span id="totalAmount"></span> KM</div>
+            <div class="footer">
+                <div>Fakturirao</div>
+                <div>Preuzeo</div>
+            </div>
+        </div>
+        <button onclick="downloadPDF()" class="download-btn center-button">Preuzmi račun</button>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    </div>
     <div class="main-container" id="invoiceFormContainer">
         <form class="form-group" action="#" onsubmit="handleFormSubmit(event)" method="POST">
-            <div class="form-group">
-                <label class="form-label" for="jib">JIB:</label>
-                <input class="form-input" type="text" id="jib" name="jib" required>
-            </div>
+        
             <div class="form-group">
                 <label class="form-label" for="payment_date">Payment Date:</label>
                 <input class="form-input" type="date" id="payment_date" name="payment_date" required>
@@ -139,7 +106,6 @@ console.log(invoiceArticle);
 
     <div class="main-container" id="invoiceArticleFormContainer" style="display: none;">
         <form class="form-group" action="#" onsubmit="handleArticleFormSubmit(event)" method="POST">
-          
             <div class="form-group">
                 <label class="form-label" for="article_name">Naziv usluge:</label>
                 <input class="form-input" type="text" id="article_name" name="article_name" required>
@@ -158,35 +124,84 @@ console.log(invoiceArticle);
             </div>
             <div class="form-group">
                 <label class="form-label" for="unit_of_measure">Jedinica mjere:</label>
-                <input class="form-input" type="text" id="unit_of_measure" name="unit_of_measure" required>
+                <input class="form-input" type="text" id="unit_of_measure" name="unit_of_measure" >
             </div>
             <div class="form-group">
                 <label class="form-label" for="article_note">Napomena:</label>
-                <textarea class="form-input" id="article_note" name="article_note" required></textarea>
+                <textarea class="form-input" id="article_note" name="article_note" ></textarea>
             </div>
             <button class="form-button" type="submit">Dodaj artikal</button>
         </form>
     </div>
 
+    <div class="main-container" id="updateInvoiceContainer" style="display: none;">
+        <button class="form-button" onclick="handleUpdateInvoice()">Zavrsi racun</button>
+    </div>
+
+    <div class="main-container" id="invoiceArticleTableContainer" style="display: none;">
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>ID Fakture</th>
+                    <th>Naziv artikla</th>
+                    <th>Kolicina</th>
+                    <th>Cijena sa pdv</th>
+                    <th>Cijena bez pdv</th>
+                    <th>Pdv</th>
+                    <th>Popust</th>
+                    <th>Jedinica mjere</th>
+                    <th>Napomena</th>
+                </tr>
+            </thead>
+            <tbody id="invoiceArticleTableBody">
+                <!-- Rows will be populated by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const production_order_id = urlParams.get('production_order_id');
         const invoice = JSON.parse(`<%- JSON.stringify(invoice) %>`);
         const invoiceArticle = JSON.parse(`<%- JSON.stringify(invoiceArticle) %>`);
+
+        console.log('Invoice:', invoice);
+        console.log('Invoice Article:', invoiceArticle);
 
         if (invoice.length === 0 && invoiceArticle.length === 0) {
             document.getElementById('invoiceFormContainer').style.display = 'block';
             document.getElementById('invoiceArticleFormContainer').style.display = 'none';
-        } else if (invoice.length > 0 && invoiceArticle.length === 0) {
+        } else if (invoice.length > 0 && invoice[0].status === 'OPEN') {
             document.getElementById('invoiceFormContainer').style.display = 'none';
             document.getElementById('invoiceArticleFormContainer').style.display = 'block';
+            document.getElementById('updateInvoiceContainer').style.display = 'block';
+            document.getElementById('invoiceArticleTableContainer').style.display = 'block';
+
+            const tableBody = document.getElementById('invoiceArticleTableBody');
+            invoiceArticle.forEach(article => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${article.invoice_id}</td>
+                    <td>${article.article_name}</td>
+                    <td>${article.amount}</td>
+                    <td>${article.price_with_vat}</td>
+                    <td>${article.price_with_out_vat}</td>
+                    <td>${article.vat}</td>
+                    <td>${article.discount}</td>
+                    <td>${article.unit_of_measure}</td>
+                    <td>${article.note}</td>
+                `;
+                tableBody.appendChild(row);
+            });
         } else {
             document.getElementById('invoiceFormContainer').style.display = 'none';
             document.getElementById('invoiceArticleFormContainer').style.display = 'none';
+            document.getElementById('main-container-pdf-id').style.display = 'block';
         }
 
         async function handleFormSubmit(event) {
             event.preventDefault();
 
-            const jib = document.getElementById('jib').value;
             const paymentDate = document.getElementById('payment_date').value;
             const activatedDate = document.getElementById('activated_date').value;
             const note = document.getElementById('note').value;
@@ -197,11 +212,11 @@ console.log(invoiceArticle);
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ jib, payment_date: paymentDate, activated_date: activatedDate, note, pdv })
+                body: JSON.stringify({  payment_date: paymentDate, activated_date: activatedDate, note, pdv, production_order_id })
             });
 
             if (response.ok) {
-                alert('Invoice successfully added');
+                alert('Predracun dodan');
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000);
@@ -220,22 +235,81 @@ console.log(invoiceArticle);
             const unitOfMeasure = document.getElementById('unit_of_measure').value;
             const articleNote = document.getElementById('article_note').value;
 
-            const response = await fetch('/api/invoiceArticle', {
+            const response = await fetch('/api/invoice/create-invoice-article', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ invoice_id: invoiceId, article_name: articleName, amount, price_with_vat: priceWithVat, price_with_out_vat: priceWithoutVat, vat, discount, unit_of_measure: unitOfMeasure, note: articleNote })
+                body: JSON.stringify({ invoice_id: invoice[0].invoice_id, article_name: articleName, amount, price_with_vat: priceWithVat, discount, unit_of_measure: unitOfMeasure, note: articleNote })
             });
 
             if (response.ok) {
-                alert('Article successfully added');
+                alert('Stavka na fakturi dodana');
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000);
             } else {
                 alert('An error occurred');
             }
+        }
+
+        async function handleUpdateInvoice() {
+            const response = await fetch('/api/invoice/update-status', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ invoice_id: invoice[0].invoice_id })
+            });
+
+            if (response.ok) {
+                alert('Faktura zavrsena');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
+            } else {
+                alert('An error occurred');
+            }
+        }
+
+
+        // PDF
+
+
+        document.getElementById("invoiceNumber").innerText = invoice[0].number;
+        document.getElementById("invoiceDate").innerText = new Date(invoice[0].activated_date).toLocaleDateString();
+        document.getElementById("owner").innerText = invoice[0].user.first_name + " " + invoice[0].user.last_name;
+        document.getElementById("jib").innerText = invoice[0].user.jib;
+        document.getElementById("car").innerText = invoice[0].car.chassis_number + " - " + invoice[0].car.name + " - " + invoice[0].car.plate_number;
+        document.getElementById("note").innerText = invoice[0].note;
+
+        const itemsTable = document.getElementById("items");
+        let totalAmount = 0;
+
+        invoiceArticle.forEach((item, index) => {
+            let row = itemsTable.insertRow();
+            row.insertCell(0).innerText = index + 1;
+            row.insertCell(1).innerText = item.article_name;
+            row.insertCell(2).innerText = item.amount;
+            row.insertCell(3).innerText = item.price_with_vat + " KM";
+            totalAmount += parseFloat(item.price_with_vat);
+        });
+
+        document.getElementById("totalAmount").innerText = totalAmount.toFixed(2);
+
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            html2canvas(document.getElementById('invoice')).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 210;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                doc.save(`racun_otpremnica_${invoice[0].number}.pdf`);
+            });
         }
     </script>
 </body>

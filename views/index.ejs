@@ -25,6 +25,8 @@
         korisnika</button>
     <button id="openAllProductionsBtn" class="form-button" onclick="openAllProductionsPage()">Prikazi sve
         naloge</button>
+    <button id="openAllInvoicesBtn" class="form-button" onclick="openAllInvoicesPage()">Prikazi sve
+        fakture</button>
     <table class="user-table">
         <thead>
             <tr>
@@ -57,6 +59,9 @@
             <script>
                 function openAllProductionsPage() {
                     window.location.href = '/api/productionorder';
+                };
+                function openAllInvoicesPage() {
+                    window.location.href = '/api/invoice/all-invoices';
                 }
                 document.addEventListener("keydown", function (event) {
                     if (event.key === "Enter") {
