@@ -300,5 +300,6 @@ const deleteInvoice = asyncHandler(async (req, res) => {
     if (!deleteInvoice) {
         res.status(500).json({ message: "Faktura nije obrisana!" });
     }
+    res.status(200).json({ message: "Faktura je obrisana!" });
 });
 module.exports = {deleteInvoice, pdfInvoice, updateInvoice, renderInvoice, createInovice, updateInvoiceStatus, createInvoiceArticle, allInvoices, redirectToAll };
