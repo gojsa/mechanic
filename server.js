@@ -14,6 +14,7 @@ app.use("/api/user", require("./routes/userRoute.js"));
 app.use("/api/car", require("./routes/carRoute.js"));
 app.use("/api/productionOrder", require("./routes/productionOrderRoute.js"));
 app.use("/api/invoice", require("./routes/invoiceRoute.js"));
+app.use("/api/offer", require("./routes/offerRoute.js"));
 
 
 app.listen(port, () => {

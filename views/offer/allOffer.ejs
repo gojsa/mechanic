@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/tables.css">
+    <link rel="stylesheet" href="/css/modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Ponude</title>
+</head>
+
+<body>
+    <%- include('../backhome') %>
+    <style>
+        .main-container {
+            padding: 20px;
+        }
+        .status-closed {
+            background-color: red;
+        }
+        .status-open {
+            background-color: rgb(73, 245, 73);
+        }
+    </style>
+    <div class="main-container">
+        <h1 class="header">Ponude</h1>
+ 
+        <div action="" class="user-form">
+            <div class="form-group">
+                <label for="search" class="form-label">Pretrazi Ponude:</label>
+                <input class="form-input" type="text" id="searchInput" placeholder="Pretraga..." onkeypress="handleKeyPress(event)">
+            </div>
+            <button class="form-button" onclick="fetchOffers()">Pretraži</button>
+        </div>
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>Broj Ponude</th>
+                    <th>Broj Naloga</th>
+                    <th>Ime Vlasnika Vozila</th>
+                    <th>Naziv Vozila</th>
+                    <th>Datum Kreiranja Ponude</th>
+                    <th>Status</th>
+                    <th>Akcije</th>
+                </tr>
+            </thead>
+            <tbody id="offerTableBody">
+                <!-- Rows will be inserted here dynamically -->
+            </tbody>
+        </table>
+        <div class="pagination">
+            <button onclick="prevPage()">Prethodna</button>
+            <span id="pageInfo"></span>
+            <button onclick="nextPage()">Sledeća</button>
+        </div>
+    </div>
+
+    <%- include('updateOffer') %>
+
+    <script>
+        let currentPage = 1;
+        const limit = 10;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchOffers();
+        });
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                fetchOffers();
+            }
+        }
+
+        async function fetchOffers() {
+            const search = document.getElementById('searchInput').value;
+            const response = await fetch(`/api/offer/all-offers/${limit}/${currentPage}?search=${search}`);
+            const data = await response.json();
+            renderTable(data.offers);
+            updatePageInfo(data.totalCount);
+        }
+
+        function renderTable(offers) {
+            const tbody = document.getElementById('offerTableBody');
+            tbody.innerHTML = '';
+            offers.forEach(offer => {
+                const formattedDate = new Date(offer.datum_kreiranja_ponude).toLocaleDateString('en-GB');
+                const statusClass = offer.status === 'CLOSED' ? 'status-closed' : (offer.status === 'OPEN' ? 'status-open' : '');
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${offer.broj_ponude}</td>
+                    <td>${offer.broj_naloga}</td>
+                    <td>${offer.ime_vlasnika_vozila}</td>
+                    <td>${offer.naziv_vozila}</td>
+                    <td>${formattedDate}</td>
+                    <td class="${statusClass}">${offer.status}</td>
+                    <td>
+                        <i class="fa fa-edit" style="font-size:24px;color: lightgreen; cursor: pointer;" onclick='openUpdateOfferModal(${JSON.stringify(offer)})'></i>
+                        <i class="fa fa-trash-o" style="font-size:24px; color: red;cursor: pointer;" onclick="deleteOffer(${offer.offer_id})"></i>
+                        <i class="fa fa-file-text" style="font-size:24px; color: blue; cursor: pointer;" onclick="openOfferArticle(${offer.offer_id})"></i>
+                    </td>
+                `;
+                row.ondblclick = () => {
+                    window.location.href = `/api/offer/pdf-offer/${offer.offer_id}`;
+                };
+                tbody.appendChild(row);
+            });
+        }
+
+        function openOfferArticle(offerId) {
+            window.location.href = `/api/offer/offer-article-one-offer/${offerId}`;
+        }
+
+        function updatePageInfo(totalCount) {
+            const pageInfo = document.getElementById('pageInfo');
+            const totalPages = Math.ceil(totalCount / limit);
+            pageInfo.textContent = `Strana ${currentPage} od ${totalPages}`;
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchOffers();
+            }
+        }
+
+        function nextPage() {
+            currentPage++;
+            fetchOffers();
+        }
+
+        async function deleteOffer(offerId) {
+            if (confirm('Da li ste sigurno da zelite obrisati ponudu?')) {
+                const response = await fetch(`/api/offer/${offerId}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    alert('Ponuda je uspesno obrisana');
+                    window.location.reload();
+                } else {
+                    alert('Doslo je do greske');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

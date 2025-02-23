@@ -32,10 +32,10 @@ db.car = require("../models/car")(sequelize, Sequelize);
 db.productionOrder = require("../models/productionOrder")(sequelize, Sequelize);
 db.invoice = require("../models/invoice")(sequelize, Sequelize);
 db.invoiceArticle = require("../models/invoiceArticle")(sequelize, Sequelize);
+db.offer = require("../models/offer")(sequelize, Sequelize);
+db.offerArticle = require("../models/offerArticle")(sequelize, Sequelize);
 
 db.user.hasMany(db.car, { foreignKey: 'user_id' });
-// db.car.hasMany(db.productionOrder, { foreignKey: 'car_id' });
-// db.user.hasMany(db.productionOrder, { foreignKey: 'user_id' });
 
 db.car.hasMany(db.productionOrder, { foreignKey: 'car_id' });
 db.productionOrder.belongsTo(db.car, { foreignKey: 'car_id' });
@@ -48,11 +48,14 @@ db.invoice.belongsTo(db.productionOrder, { foreignKey: 'production_order_id' });
 
 
 db.invoice.hasMany(db.invoiceArticle, { foreignKey: 'invoice_id' });
-db.invoice.belongsTo(db.invoice, { foreignKey: 'invoice_id' });
+db.invoiceArticle.belongsTo(db.invoice, { foreignKey: 'invoice_id' });
 
 db.car.hasMany(db.invoice, { foreignKey: 'car_id' });
 db.invoice.belongsTo(db.car, { foreignKey: 'car_id' });
 
 db.user.hasMany(db.invoice, { foreignKey: 'user_id' });
 db.invoice.belongsTo(db.user, { foreignKey: 'user_id' });
+
+db.offer.hasMany(db.offerArticle, { foreignKey: 'offer_id' });
+db.offerArticle.belongsTo(db.offer, { foreignKey: 'offer_id' });
 module.exports = db
