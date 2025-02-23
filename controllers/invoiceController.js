@@ -302,4 +302,59 @@ const deleteInvoice = asyncHandler(async (req, res) => {
     }
     res.status(200).json({ message: "Faktura je obrisana!" });
 });
-module.exports = {deleteInvoice, pdfInvoice, updateInvoice, renderInvoice, createInovice, updateInvoiceStatus, createInvoiceArticle, allInvoices, redirectToAll };
+
+const invoiceArticleOneInvoice = asyncHandler(async (req, res) => {
+    const invoice_id = req.params.invoice_id;
+    const invoiceArticle = await InvoiceArticle.findAll({
+        where: {
+            invoice_id
+        }
+    });
+    if (!invoiceArticle) {
+        res.status(500).json({ message: "Artikli nisu pronadjeni!" });
+    }
+    res.render("invoice/invoiceArticle.ejs", {
+        invoiceArticle
+    });
+});
+const updateinvoiceArticle = asyncHandler(async (req, res) => {
+    const invoice_article_id = req.params.invoice_article_id;
+    const amount = req.body.amount;
+    const price_with_vat = req.body.price_with_vat;
+    const price_with_out_vat = req.body.price_with_out_vat;
+    const article_name = req.body.article_name;
+    const note = req.body.note;
+    const unit_of_measure = req.body.unit_of_measure;
+    const discount = req.body.discount;
+    const invoiceArticle = await InvoiceArticle.update({
+        amount,
+        price_with_vat,
+        price_with_out_vat,
+        article_name,
+        note,
+        unit_of_measure,
+        discount
+    }, {
+        where: {
+            invoice_article_id
+        }
+    });
+    if(!invoiceArticle){
+        res.status(500).json({ message: "Artikal nije azuriran!" });
+    }
+    res.status(200).json({ message: "Artikal je azuriran!" });
+})
+
+const deleteInvoiceArticle = asyncHandler(async (req, res) => {
+    const invoice_article_id = req.params.invoice_article_id;
+    const deleteInvoiceArticle = await InvoiceArticle.destroy({
+        where: {
+            invoice_article_id
+        }
+    });
+    if (!deleteInvoiceArticle) {
+        res.status(500).json({ message: "Artikal nije obrisan!" });
+    }
+    res.status(200).json({ message: "Artikal je obrisan!" });
+});
+module.exports = {deleteInvoiceArticle,updateinvoiceArticle,deleteInvoice, pdfInvoice, updateInvoice, renderInvoice, createInovice, updateInvoiceStatus, createInvoiceArticle, allInvoices, redirectToAll, invoiceArticleOneInvoice };

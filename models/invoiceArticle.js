@@ -22,12 +22,15 @@ module.exports = (sequelize, Sequelize) => {
         },
         price_with_out_vat: {
             type: DataTypes.DECIMAL(10, 2),
+            defaultValue: "0.00"
         },
         vat: {
             type: DataTypes.INTEGER,
+            defaultValue: 0
         },
         discount: {
             type: DataTypes.STRING,
+            defaultValue: "0"
         },
         unit_of_measure: {
             type: DataTypes.STRING,

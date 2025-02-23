@@ -1,0 +1,38 @@
+<div id="editInvoiceModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Izmjeni stavke fakture</h2>
+        <form class="form-group" action="#" onsubmit="handleEditFormSubmit(event)" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="editArticleName">Naziv artikla:</label>
+                <input class="form-input" type="text" id="editArticleName" name="article_name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="editAmount">Kolicina:</label>
+                <input class="form-input" type="text" id="editAmount" name="amount" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="editPriceWithVat">Cijena sa pdv:</label>
+                <input class="form-input" type="text" id="editPriceWithVat" name="price_with_vat" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="editPriceWithoutVat">Cijena bez pdv:</label>
+                <input class="form-input" type="text" id="editPriceWithoutVat" name="price_with_out_vat" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="editDiscount">Popust:</label>
+                <input class="form-input" type="text" id="editDiscount" name="discount" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="editUnitOfMeasure">Jedinica mjere:</label>
+                <input class="form-input" type="text" id="editUnitOfMeasure" name="unit_of_measure" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="editNote">Napomena:</label>
+                <textarea class="form-input" id="editNote" name="note" required></textarea>
+            </div>
+            <input type="hidden" id="editInvoiceArticleId" name="invoice_article_id">
+            <button class="form-button" type="submit">Izmjeni</button>
+        </form>
+    </div>
+</div>

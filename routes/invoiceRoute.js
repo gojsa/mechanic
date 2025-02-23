@@ -10,10 +10,13 @@ const {
     redirectToAll,
     updateInvoice,
     pdfInvoice,
-    deleteInvoice
+    deleteInvoice,
+    invoiceArticleOneInvoice,
+    updateinvoiceArticle,
+    deleteInvoiceArticle
 } = require("../controllers/invoiceController");
 
-// invoicePdf
+router.get("/invoice-article-one-invoice/:invoice_id", invoiceArticleOneInvoice);
 router.get("/pdf-invoice/:invoice_id", pdfInvoice);
 router.get("/all-invoices/:limit/:offset", allInvoices);
 router.get("/render", renderInvoice);
@@ -22,7 +25,9 @@ router.post("/", createInovice);
 router.post("/create-invoice-article", createInvoiceArticle);
 router.put("/update-status", updateInvoiceStatus);
 router.put("/update-invoice/:invoice_id", updateInvoice);
+router.put("/update-invoice-article/:invoice_article_id", updateinvoiceArticle);
 router.delete("/:invoice_id", deleteInvoice);
+router.delete("/delete-invoice-article/:invoice_article_id", deleteInvoiceArticle);
 
 
 module.exports = router;

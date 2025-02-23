@@ -37,6 +37,7 @@ module.exports = (sequelize, Sequelize) => {
         },
         vat: {
             type: DataTypes.STRING,
+            defaultValue: "0.00"
         },
         note: {
             type: DataTypes.TEXT,

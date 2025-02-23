@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/tables.css">
+    <link rel="stylesheet" href="/css/modal.css">
+    <link rel="stylesheet" href="/css/invoice.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Faktura</title>
+</head>
+
+<body>
+    <%- include('../backhome') %>
+    <style>
+        .main-container {
+            padding: 20px;
+        }
+    </style>
+    <div class="main-container">
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>ID Fakture</th>
+                    <th>Naziv artikla</th>
+                    <th>Kolicina</th>
+                    <th>Cijena sa pdv</th>
+                    <th>Cijena bez pdv</th>
+                    <th>Popust</th>
+                    <th>Jedinica mjere</th>
+                    <th>Napomena</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="invoiceArticleTableBody">
+                <!-- Rows will be populated by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Include the modal content from editInvoice.ejs -->
+    <%- include('editInvoice') %>
+
+    <script>
+        const jsonData = JSON.parse(`<%- JSON.stringify(invoiceArticle) %>`);
+        console.log(jsonData);
+
+        const tableBody = document.getElementById('invoiceArticleTableBody');
+        jsonData.forEach(article => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${article.invoice_article_id}</td>
+                <td>${article.article_name}</td>
+                <td>${article.amount}</td>
+                <td>${article.price_with_vat}</td>
+                <td>${article.price_with_out_vat}</td>
+                <td>${article.discount}</td>
+                <td>${article.unit_of_measure}</td>
+                <td>${article.note}</td>
+                <td>
+                    <i class="fa fa-edit" style="font-size:24px;color: lightgreen; cursor: pointer;" onclick='openEditModal(${JSON.stringify(article)})'></i>
+                    <i class="fa fa-trash-o" style="font-size:24px; color: red;cursor: pointer;" onclick="deleteArticle(${article.invoice_article_id})"></i>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        function openEditModal(article) {
+            document.getElementById('editInvoiceArticleId').value = article.invoice_article_id;
+            document.getElementById('editArticleName').value = article.article_name;
+            document.getElementById('editAmount').value = article.amount;
+            document.getElementById('editPriceWithVat').value = article.price_with_vat;
+            document.getElementById('editPriceWithoutVat').value = article.price_with_out_vat;
+            
+            document.getElementById('editDiscount').value = article.discount;
+            document.getElementById('editUnitOfMeasure').value = article.unit_of_measure;
+            document.getElementById('editNote').value = article.note;
+            document.getElementById('editInvoiceModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('editInvoiceModal').style.display = 'none';
+        }
+
+        async function handleEditFormSubmit(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('editInvoiceArticleId').value;
+            const articleName = document.getElementById('editArticleName').value;
+            const amount = document.getElementById('editAmount').value;
+            const priceWithVat = document.getElementById('editPriceWithVat').value;
+            const priceWithoutVat = document.getElementById('editPriceWithoutVat').value;
+            const discount = document.getElementById('editDiscount').value;
+            const unitOfMeasure = document.getElementById('editUnitOfMeasure').value;
+            const note = document.getElementById('editNote').value;
+
+            const response = await fetch(`/api/invoice/update-invoice-article/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ article_name: articleName, amount, price_with_vat: priceWithVat, price_with_out_vat: priceWithoutVat, discount, unit_of_measure: unitOfMeasure, note })
+            });
+
+            if (response.ok) {
+                alert('Stavke izmjenjena');
+                window.location.reload();
+            } else {
+                alert('Doslo je do greske');
+            }
+        }
+
+        async function deleteArticle(id) {
+            if (confirm('Da li ste sigurni?')) {
+                const response = await fetch(`/api/invoice/delete-invoice-article/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Stavka obrisana');
+                    window.location.reload();
+                } else {
+                    alert('Doslo je do greske');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
