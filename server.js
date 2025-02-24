@@ -11,6 +11,7 @@ app.get("/", async (req, res) => {
 //   res.render("car/onecar");
 // });
 app.use("/api/user", require("./routes/userRoute.js"));
+app.use("/api/account", require("./routes/accountRoute.js"));
 app.use("/api/car", require("./routes/carRoute.js"));
 app.use("/api/productionOrder", require("./routes/productionOrderRoute.js"));
 app.use("/api/invoice", require("./routes/invoiceRoute.js"));
