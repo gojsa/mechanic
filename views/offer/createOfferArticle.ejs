@@ -1,0 +1,26 @@
+<div id="createArticleModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCreateArticleModal()">&times;</span>
+        <h2>Dodaj Artikal</h2>
+        <form class="form-group" id="createArticleForm" onsubmit="handleCreateArticleFormSubmit(event)">
+
+            <div class="form-group">
+                <label class="form-label" for="create_article_name">Naziv Artikla:</label>
+                <input class="form-input" type="text" id="create_article_name" name="article_name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="create_amount">Količina:</label>
+                <input class="form-input" type="text" id="create_amount" name="amount" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="create_price_with_vat">Cijena sa PDV:</label>
+                <input class="form-input" type="number" step="0.01" id="create_price_with_vat" name="price_with_vat" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="create_note">Napomena:</label>
+                <textarea class="form-input" id="create_note" name="note"></textarea>
+            </div>
+            <button class="form-button" type="submit">Dodaj Artikal</button>
+        </form>
+    </div>
+</div>

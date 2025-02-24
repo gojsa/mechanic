@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/tables.css">
+    <link rel="stylesheet" href="/css/modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Artikli Ponude</title>
+</head>
+
+<body>
+    <%- include('../backhome') %>
+    <style>
+        .main-container {
+            padding: 20px;
+        }
+    </style>
+    <div class="main-container">
+        <h1 class="header">Artikli Ponude</h1>
+        <button class="form-button" onclick="openCreateArticleModal()">Dodaj Artikal</button>
+        <button class="form-button" id="open-print-pdf-z" onclick="openPrint()">Printaj predračun</button>
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>ID Ponude</th>
+                    <th>Naziv Artikla</th>
+                    <th>Količina</th>
+                    <th>Cijena sa PDV</th>
+                    <th>Napomena</th>
+                    <th>Akcije</th>
+                </tr>
+            </thead>
+            <tbody id="offerArticleTableBody">
+                <!-- Rows will be inserted here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Include the modal content for creating and editing an article -->
+    <%- include('createOfferArticle') %>
+    <%- include('editArticle') %>
+
+    <script>
+        const jsonData = JSON.parse(`<%- JSON.stringify(offerArticles) %>`);
+        if(jsonData.length === 0){
+            document.getElementById('open-print-pdf-z').style.display = 'none';
+        }
+        function openPrint(){
+            window.location.href = `/api/offer/print/${jsonData[0].offer_id}`;
+        }
+
+        const tableBody = document.getElementById('offerArticleTableBody');
+        jsonData.forEach(article => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${article.offer_id}</td>
+                <td>${article.article_name}</td>
+                <td>${article.amount}</td>
+                <td>${article.price_with_vat}</td>
+                <td>${article.note}</td>
+                <td>
+                    <i class="fa fa-edit" style="font-size:24px;color: lightgreen; cursor: pointer;" onclick='openEditArticleModal(${JSON.stringify(article)})'></i>
+                    <i class="fa fa-trash-o" style="font-size:24px; color: red;cursor: pointer;" onclick="deleteArticle(${article.offer_article_id})"></i>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        function openCreateArticleModal() {
+            document.getElementById('createArticleModal').style.display = 'block';
+        }
+
+        function closeCreateArticleModal() {
+            document.getElementById('createArticleModal').style.display = 'none';
+        }
+
+        function openEditArticleModal(article) {
+            document.getElementById('edit_article_id').value = article.offer_article_id;
+            document.getElementById('edit_article_name').value = article.article_name;
+            document.getElementById('edit_amount').value = article.amount;
+            document.getElementById('edit_price_with_vat').value = article.price_with_vat;
+            document.getElementById('edit_note').value = article.note;
+            document.getElementById('editArticleModal').style.display = 'block';
+        }
+
+        function closeEditArticleModal() {
+            document.getElementById('editArticleModal').style.display = 'none';
+        }
+
+        async function handleCreateArticleFormSubmit(event) {
+            event.preventDefault();
+            const form = document.getElementById('createArticleForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            const url = window.location.href;
+            const parts = url.split("/");
+            const id = parts[parts.length - 1]; // Uzima zadnji segment URL-a
+    
+            data.offer_id = id;
+
+            const response = await fetch('/api/offer/article', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Artikal je uspješno dodan');
+                closeCreateArticleModal();
+                window.location.reload();
+            } else {
+                alert('Došlo je do greške');
+            }
+        }
+
+        async function handleEditArticleFormSubmit(event) {
+            event.preventDefault();
+            const form = document.getElementById('editArticleForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await fetch(`/api/offer/article/${data.article_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Artikal je uspješno izmijenjen');
+                closeEditArticleModal();
+                window.location.reload();
+            } else {
+                alert('Došlo je do greške');
+            }
+        }
+
+        async function deleteArticle(articleId) {
+            if (confirm('Da li ste sigurni da želite obrisati artikal?')) {
+                const response = await fetch(`/api/offer/article/${articleId}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    alert('Artikal je uspješno obrisan');
+                    window.location.reload();
+                } else {
+                    alert('Došlo je do greške');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

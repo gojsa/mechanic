@@ -1,0 +1,34 @@
+<div id="addOfferModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAddOfferModal()">&times;</span>
+        <h2>Dodaj Ponudu</h2>
+        <form class="form-group" id="addOfferForm" onsubmit="handleAddOfferFormSubmit(event)">
+
+            <div class="form-group">
+                <label class="form-label" for="first_name">Ime:</label>
+                <input class="form-input" type="text" id="first_name" name="first_name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="last_name">Prezime:</label>
+                <input class="form-input" type="text" id="last_name" name="last_name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="car_name">Naziv Vozila:</label>
+                <input class="form-input" type="text" id="car_name" name="car_name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="car_plate">Registarski Broj:</label>
+                <input class="form-input" type="text" id="car_plate" name="car_plate" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="jib">JIB:</label>
+                <input class="form-input" type="text" id="jib" name="jib" >
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="note">Napomena:</label>
+                <textarea class="form-input" id="note" name="note" ></textarea>
+            </div>
+            <button class="form-button" type="submit">Dodaj Ponudu</button>
+        </form>
+    </div>
+</div>

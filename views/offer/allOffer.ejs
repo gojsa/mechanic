@@ -34,15 +34,18 @@
             </div>
             <button class="form-button" onclick="fetchOffers()">Pretraži</button>
         </div>
+        <button class="form-button" onclick="openAddOfferModal()">Dodaj Ponudu</button>
         <table class="user-table">
             <thead>
                 <tr>
-                    <th>Broj Ponude</th>
-                    <th>Broj Naloga</th>
-                    <th>Ime Vlasnika Vozila</th>
+                    <th>Broj</th>
+                    <th>Ime</th>
+                    <th>Prezime</th>
                     <th>Naziv Vozila</th>
+                    <th>Registarski Broj</th>
+                    <th>JIB</th>
+                    <th>Napomena</th>
                     <th>Datum Kreiranja Ponude</th>
-                    <th>Status</th>
                     <th>Akcije</th>
                 </tr>
             </thead>
@@ -57,11 +60,13 @@
         </div>
     </div>
 
+    <!-- Include the modal content from addOffer.ejs and updateOffer.ejs -->
+    <%- include('addOffer') %>
     <%- include('updateOffer') %>
 
     <script>
         let currentPage = 1;
-        const limit = 10;
+        const limit = 25;
 
         document.addEventListener('DOMContentLoaded', function() {
             fetchOffers();
@@ -75,7 +80,7 @@
 
         async function fetchOffers() {
             const search = document.getElementById('searchInput').value;
-            const response = await fetch(`/api/offer/all-offers/${limit}/${currentPage}?search=${search}`);
+            const response = await fetch(`/api/offer/all-offer/${limit}/${currentPage}?search=${search}`);
             const data = await response.json();
             renderTable(data.offers);
             updatePageInfo(data.totalCount);
@@ -85,25 +90,24 @@
             const tbody = document.getElementById('offerTableBody');
             tbody.innerHTML = '';
             offers.forEach(offer => {
-                const formattedDate = new Date(offer.datum_kreiranja_ponude).toLocaleDateString('en-GB');
-                const statusClass = offer.status === 'CLOSED' ? 'status-closed' : (offer.status === 'OPEN' ? 'status-open' : '');
+                const formattedDate = new Date(offer.created_at).toLocaleDateString('en-GB');
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${offer.broj_ponude}</td>
-                    <td>${offer.broj_naloga}</td>
-                    <td>${offer.ime_vlasnika_vozila}</td>
-                    <td>${offer.naziv_vozila}</td>
+                    <td>${offer.number}</td>
+                    <td>${offer.first_name}</td>
+                    <td>${offer.last_name}</td>
+                    <td>${offer.car_name}</td>
+                    <td>${offer.car_plate}</td>
+                    <td>${offer.jib}</td>
+                    <td>${offer.note}</td>
                     <td>${formattedDate}</td>
-                    <td class="${statusClass}">${offer.status}</td>
                     <td>
                         <i class="fa fa-edit" style="font-size:24px;color: lightgreen; cursor: pointer;" onclick='openUpdateOfferModal(${JSON.stringify(offer)})'></i>
                         <i class="fa fa-trash-o" style="font-size:24px; color: red;cursor: pointer;" onclick="deleteOffer(${offer.offer_id})"></i>
                         <i class="fa fa-file-text" style="font-size:24px; color: blue; cursor: pointer;" onclick="openOfferArticle(${offer.offer_id})"></i>
                     </td>
                 `;
-                row.ondblclick = () => {
-                    window.location.href = `/api/offer/pdf-offer/${offer.offer_id}`;
-                };
+
                 tbody.appendChild(row);
             });
         }
@@ -141,6 +145,75 @@
                 } else {
                     alert('Doslo je do greske');
                 }
+            }
+        }
+
+        function openAddOfferModal() {
+            document.getElementById('addOfferModal').style.display = 'block';
+        }
+
+        function closeAddOfferModal() {
+            document.getElementById('addOfferModal').style.display = 'none';
+        }
+
+        function openUpdateOfferModal(offer) {
+            document.getElementById('updateOfferModal').style.display = 'block';
+            document.getElementById('update_first_name').value = offer.first_name;
+            document.getElementById('update_last_name').value = offer.last_name;
+            document.getElementById('update_car_name').value = offer.car_name;
+            document.getElementById('update_car_plate').value = offer.car_plate;
+            document.getElementById('update_jib').value = offer.jib;
+            document.getElementById('update_note').value = offer.note;
+            document.getElementById('update_offer_id').value = offer.offer_id;
+        }
+
+        function closeUpdateOfferModal() {
+            document.getElementById('updateOfferModal').style.display = 'none';
+        }
+
+        async function handleAddOfferFormSubmit(event) {
+            event.preventDefault();
+            const form = document.getElementById('addOfferForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await fetch('/api/offer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Ponuda je uspesno dodata');
+                closeAddOfferModal();
+                fetchOffers();
+            } else {
+                alert('Doslo je do greske');
+            }
+        }
+
+        async function handleUpdateOfferFormSubmit(event) {
+            event.preventDefault();
+            const form = document.getElementById('updateOfferForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await fetch(`/api/offer/${data.offer_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Ponuda je uspesno izmenjena');
+                closeUpdateOfferModal();
+                fetchOffers();
+            } else {
+                alert('Doslo je do greske');
             }
         }
     </script>
