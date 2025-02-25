@@ -57,11 +57,37 @@
 <body>
     <div class="login-container">
         <h2>Prijavi se</h2>
-        <form action="/login" method="POST">
+        <form action="/api/account/login" method="POST">
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Prijavi se</button>
         </form>
     </div>
+    <script>
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = {
+                username: form.username.value,
+                password: form.password.value
+            };
+            fetch('/api/account/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                if (data.success) {
+                    window.location.href = '/';
+                } else {
+                    alert('Pogrešno korisničko ime ili lozinka');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

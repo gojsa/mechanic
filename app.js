@@ -7,7 +7,14 @@ const dotenv = require("dotenv").config({
 const path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cors());
+
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+app.use(cors({
+  origin: process.env.DOMAIN,
+  credentials: true
+}));
+
 app.use(
   express.json({
     limit: "500mb"
