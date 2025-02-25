@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const {protectMiddlwere} = require("../middleware/auth");
 const {
     createCar,
     renderCar,
@@ -8,9 +8,9 @@ const {
     deleteCar
 } = require("../controllers/carController");
 
-router.get("/onecar", renderCar);
-router.post("/", createCar);
-router.put("/:car_id", updateCar);
-router.delete("/:car_id", deleteCar);
+router.get("/onecar",protectMiddlwere, renderCar);
+router.post("/",protectMiddlwere, createCar);
+router.put("/:car_id",protectMiddlwere, updateCar);
+router.delete("/:car_id",protectMiddlwere, deleteCar);
 
 module.exports = router;

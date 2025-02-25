@@ -1,12 +1,18 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const session = require('express-session');
 const dotenv = require("dotenv").config({
   path: ".env"
 });
 const path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(session({
+  secret: process.env.SECRET, // Trebalo bi da bude u .env fajlu
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Postavi na true ako koristiš HTTPS
+}));
 
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());

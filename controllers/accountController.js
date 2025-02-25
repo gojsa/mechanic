@@ -22,7 +22,6 @@ const renderLogin = (req, res) => {
 
 const login = asyncHandler(async (req, res) => {
     const { username, password } = req.body;
-    console.log(req.body)
     const SECRET_KEY = process.env.JWT_SECRET;
     const accountFind = await Account.findOne({
         where: {
@@ -37,11 +36,10 @@ const login = asyncHandler(async (req, res) => {
         res.status(401).json({ message: "Invalid username or password", success: false });
 
     }
-    const user = { id: accountFind.account_id, username: username }; // Ovo zameni pravim podacima
+    const user = { id: accountFind.account_id, username: username }; 
     const token = jwt.sign(user, SECRET_KEY, { expiresIn: '12h' });
-    req.account = {
-        account_id: accountFind.account_id
-      }
+
+    req.session.user = accountFind.account_id
     res.cookie('token', token, {
         httpOnly: true,
         secure: false,  // Postavi na true ako koristiš HTTPS

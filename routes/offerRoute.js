@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const { protectMiddlwere } = require("../middleware/auth");
 const {
     findAllOffers,
     createOffer,
@@ -14,16 +14,16 @@ const {
     renderPrintOffer
 } = require("../controllers/offerController");
 
-router.get("/offer-article-one-offer/:offer_id", findAllOfferArticles);
-router.get("/print/:offer_id", renderPrintOffer);
-router.get("/redirect-to-all", redirectToOffer);
-router.get("/all-offer/:limit/:offset", findAllOffers);
-router.post("/", createOffer);
-router.post("/article", createOfferArticle);
-router.put("/:offer_id", updateOffer);
-router.put("/article/:offer_article_id", updateOfferArticle);
-router.delete("/:offer_id", deleteOffer);
-router.delete("/article/:offer_article_id", deleteOfferArticle);
+router.get("/offer-article-one-offer/:offer_id",protectMiddlwere, findAllOfferArticles);
+router.get("/print/:offer_id",protectMiddlwere, renderPrintOffer);
+router.get("/redirect-to-all",protectMiddlwere, redirectToOffer);
+router.get("/all-offer/:limit/:offset", protectMiddlwere, findAllOffers);
+router.post("/",protectMiddlwere, createOffer);
+router.post("/article",protectMiddlwere, createOfferArticle);
+router.put("/:offer_id",protectMiddlwere, updateOffer);
+router.put("/article/:offer_article_id",protectMiddlwere, updateOfferArticle);
+router.delete("/:offer_id",protectMiddlwere, deleteOffer);
+router.delete("/article/:offer_article_id",protectMiddlwere, deleteOfferArticle);
 
 
 module.exports = router;

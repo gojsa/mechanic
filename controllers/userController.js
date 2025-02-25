@@ -19,7 +19,7 @@ const getOneUser = asyncHandler(async (req, res) => {
 
 const getUsers = asyncHandler(async (req, res) => {
     try {
-        console.log(req.account)
+        console.log(req.session.user)
         const search = req.query.search || "";
         const limit = parseInt(req.params.limit, 10) || 10;
         const offset = (parseInt(req.params.offset, 10) - 1) * limit || 0;
@@ -29,7 +29,9 @@ const getUsers = asyncHandler(async (req, res) => {
             `SELECT COUNT(*) AS count
              FROM "user"
              LEFT JOIN "car" ON "user"."user_id" = "car"."user_id"
-             WHERE "user"."first_name" ILIKE :search 
+             WHERE 
+             "user".account_id = ${req.session.user} AND
+             "user"."first_name" ILIKE :search 
              OR "user"."last_name" ILIKE :search
              OR "user"."jmbg" ILIKE :search
              OR "car"."chassis_number" ILIKE :search`,
@@ -50,6 +52,7 @@ FROM (
     FROM "user"
     LEFT JOIN "car" ON "user"."user_id" = "car"."user_id"
     where
+    "user".account_id = ${req.session.user} AND
     (
             "first_name" ILIKE '%${search}%' 
              OR "last_name" ILIKE '%${search}%'

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const { protectMiddlwere } = require("../middleware/auth");
 const {
     renderInvoice,
     createInovice,
@@ -16,18 +16,18 @@ const {
     deleteInvoiceArticle
 } = require("../controllers/invoiceController");
 
-router.get("/invoice-article-one-invoice/:invoice_id", invoiceArticleOneInvoice);
-router.get("/pdf-invoice/:invoice_id", pdfInvoice);
-router.get("/all-invoices/:limit/:offset", allInvoices);
-router.get("/render", renderInvoice);
-router.get("/redirect-to-all", redirectToAll);
-router.post("/", createInovice);
-router.post("/create-invoice-article", createInvoiceArticle);
-router.put("/update-status", updateInvoiceStatus);
-router.put("/update-invoice/:invoice_id", updateInvoice);
-router.put("/update-invoice-article/:invoice_article_id", updateinvoiceArticle);
-router.delete("/:invoice_id", deleteInvoice);
-router.delete("/delete-invoice-article/:invoice_article_id", deleteInvoiceArticle);
+router.get("/invoice-article-one-invoice/:invoice_id",protectMiddlwere, invoiceArticleOneInvoice);
+router.get("/pdf-invoice/:invoice_id",protectMiddlwere, pdfInvoice);
+router.get("/all-invoices/:limit/:offset",protectMiddlwere, allInvoices);
+router.get("/render",protectMiddlwere, renderInvoice);
+router.get("/redirect-to-all",protectMiddlwere, redirectToAll);
+router.post("/",protectMiddlwere, createInovice);
+router.post("/create-invoice-article",protectMiddlwere, createInvoiceArticle);
+router.put("/update-status",protectMiddlwere, updateInvoiceStatus);
+router.put("/update-invoice/:invoice_id",protectMiddlwere, updateInvoice);
+router.put("/update-invoice-article/:invoice_article_id",protectMiddlwere, updateinvoiceArticle);
+router.delete("/:invoice_id",protectMiddlwere, deleteInvoice);
+router.delete("/delete-invoice-article/:invoice_article_id",protectMiddlwere, deleteInvoiceArticle);
 
 
 module.exports = router;
