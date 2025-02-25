@@ -39,7 +39,9 @@ const login = asyncHandler(async (req, res) => {
     }
     const user = { id: accountFind.account_id, username: username }; // Ovo zameni pravim podacima
     const token = jwt.sign(user, SECRET_KEY, { expiresIn: '12h' });
-
+    req.account = {
+        account_id: accountFind.account_id
+      }
     res.cookie('token', token, {
         httpOnly: true,
         secure: false,  // Postavi na true ako koristiš HTTPS

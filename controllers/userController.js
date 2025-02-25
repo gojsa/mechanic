@@ -19,6 +19,7 @@ const getOneUser = asyncHandler(async (req, res) => {
 
 const getUsers = asyncHandler(async (req, res) => {
     try {
+        console.log(req.account)
         const search = req.query.search || "";
         const limit = parseInt(req.params.limit, 10) || 10;
         const offset = (parseInt(req.params.offset, 10) - 1) * limit || 0;

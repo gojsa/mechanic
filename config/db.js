@@ -59,4 +59,19 @@ db.invoice.belongsTo(db.user, { foreignKey: 'user_id' });
 
 db.offer.hasMany(db.offerArticle, { foreignKey: 'offer_id' });
 db.offerArticle.belongsTo(db.offer, { foreignKey: 'offer_id' });
+
+db.account.hasMany(db.car, { foreignKey: 'account_id' });
+db.car.belongsTo(db.account, { foreignKey: 'account_id' });
+
+db.account.hasMany(db.invoice, { foreignKey: 'account_id' });
+db.invoice.belongsTo(db.account, { foreignKey: 'account_id' });
+
+db.account.hasMany(db.offer, { foreignKey: 'account_id' });
+db.offer.belongsTo(db.account, { foreignKey: 'account_id' });
+
+db.account.hasMany(db.productionOrder, { foreignKey: 'account_id' });
+db.productionOrder.belongsTo(db.account, { foreignKey: 'account_id' });
+
+db.account.hasMany(db.user, { foreignKey: 'account_id' });
+db.user.belongsTo(db.account, { foreignKey: 'account_id' });
 module.exports = db

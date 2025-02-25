@@ -11,6 +11,9 @@ module.exports = (sequelize, Sequelize) => {
         number: {
             type: DataTypes.STRING,
         },
+        account_id: {
+            type: DataTypes.INTEGER,
+        },
         first_name: {
             type: DataTypes.STRING,
         },

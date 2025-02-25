@@ -34,6 +34,9 @@ module.exports = (sequelize, Sequelize) => {
                 isEmail: true
             }
         },
+        account_id: {
+            type: DataTypes.INTEGER,
+        },
     }, {
         timestamps: true,
         createdAt: "created_at",
