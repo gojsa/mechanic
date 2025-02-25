@@ -1,0 +1,14 @@
+<script>
+    async function checkProtection() {
+    const response = await fetch(`/api/account/protect`);
+
+    const data = await response.json();
+    console.log(data);
+    if(data.success) {
+        console.log('You are logged in');
+    } else {
+        window.location.href = '/api/account/login';
+    }
+}
+checkProtection()
+</script>

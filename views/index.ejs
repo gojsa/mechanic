@@ -53,7 +53,8 @@
         <span id="page-info"></span>
         <button onclick="nextPage()">Next</button>
     </div>
-
+    <%- include('protect') %>
+    <%- include('logout') %>
     <!-- Include the modal content from addUsers.ejs and updateUsers.ejs -->
     <%- include('user/addUsers') %>
         <%- include('user/updateUsers') %>
@@ -112,9 +113,9 @@
 
                 async function fetchUsers(page, search = '') {
                     const response = await fetch(`/api/user/${limit}/${page}?search=${search}`);
-                    const status = await response.status;
+                    
                     const data = await response.json();
-                    console.log(status)
+                    console.log(data)
                     return data;
                 }
 

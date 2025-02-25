@@ -1,0 +1,32 @@
+<%- include('protect') %>
+<style>
+    .btn-logout {
+        position: fixed;
+        top: 10px;
+        width: 150px;
+        padding: 9px;
+        right: 10px;
+        background: silver;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+    }
+
+    .btn-logout:hover {
+        background: #a09f9f;
+    }
+</style>
+<div>
+    <button class="btn-logout" id="btnLogOut">Odjavi se</button>
+</div>
+
+<script>
+    document.getElementById("btnLogOut").addEventListener("click", async () => {
+        const response = await fetch('/api/account/logout');
+        const data = await response.json();
+        if (data.success) {
+            window.location.href = '/api/account/login';
+        }
+    });
+
+</script>

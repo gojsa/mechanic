@@ -3,41 +3,41 @@ const jwt = require("jsonwebtoken");
 const db = require("../config/db");
 const Account = db.account;
 
-const protect = asyncHandler(async (req, res, next) => {
-  if (req.cookies.token) {
-    try {
-      const token = req.cookies.token;
-
-      const decode = jwt.decode(token, process.env.JWT_SECRET);
-
-
-      //Get user from token
-      let attributes = ['account_id', 'company_user_name', 'company_name']
-      Account.findByPk(decode.id, {
-        attributes
-      })
-        .then(account => {
-          req.account = account;
-          next();
-          return;
-        });
-
-    } catch (error) {
-      res.render("login");
-
+const protect = async (req, res) => {
+  try {
+    if (!req.cookies.token) {
+      // return res.status(401).json({ message: "Not authorized to access this route",success:false });
+      res.json({success:false});
     }
-  }
-  else {
-    res.render("login");
-  }
 
-});
+    const token = req.cookies.token;
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
 
-function clearCookies(res) {
+    let attributes = ['account_id', 'company_user_name', 'company_name'];
+    const account = await Account.findByPk(decode.id, { attributes });
+
+    if (!account) {
+      res.json({success:false});
+    }else{
+      req.account = account;
+      res.json({success:true});
+    }
+
+
+    // res.json({success:true})
+  } catch (error) {
+    console.log("qaaaaaaaaaaaaa")
+  }
+};
+
+
+
+
+
+const clearCookies = async (req, res) => {
   const token = 'token';
-  const session = 'session'
-
   res.clearCookie(token, { httpOnly: true, expires: new Date(0) });
-  res.clearCookie(session, { httpOnly: true, expires: new Date(0) });
-}
-module.exports = { protect };
+  res.json({success:true})
+};
+
+module.exports = { protect,clearCookies };

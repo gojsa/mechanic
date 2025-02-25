@@ -30,11 +30,11 @@ const login = asyncHandler(async (req, res) => {
         }
     });
     if (!accountFind) {
-        res.status(401).json({ message: "Invalid username or password",success:false });
+        res.status(401).json({ message: "Invalid username or password", success: false });
     }
     const matchPassword = await bcrypt.compare(password, accountFind.password);
-    if(!matchPassword){
-        res.status(401).json({ message: "Invalid username or password",success:false });
+    if (!matchPassword) {
+        res.status(401).json({ message: "Invalid username or password", success: false });
 
     }
     const user = { id: accountFind.account_id, username: username }; // Ovo zameni pravim podacima
@@ -47,7 +47,7 @@ const login = asyncHandler(async (req, res) => {
         maxAge: 1000 * 60 * 60 // 1 sat
     });
 
-    res.json({ message: 'Prijava uspešna',success:true });
+    res.json({ message: 'Prijava uspešna', success: true });
 })
 
 const createAccount = asyncHandler(async (req, res) => {
@@ -65,10 +65,13 @@ const createAccount = asyncHandler(async (req, res) => {
         account
     });
 });
+
+
+
 module.exports = {
     getOneAccount,
     renderLogin,
     login,
     createAccount,
-    login
+    
 }
