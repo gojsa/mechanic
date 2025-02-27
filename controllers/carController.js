@@ -3,6 +3,7 @@ const db = require("../config/db");
 const User = db.user;
 const Car = db.car;
 const { Op } = require("sequelize");
+const account = require("../models/account");
 
 
 const createCar = asyncHandler(async (req, res) => {
@@ -15,7 +16,7 @@ const createCar = asyncHandler(async (req, res) => {
     const motor_number = req.body.motor_number;
     const mileage = req.body.mileage;
     const plate_number = req.body.plate_number;
- 
+    const account_id = req.session.user;
     if (!name || !chassis_number) {
         res.status(400).json({ message: "Ime i broj sasije su obavezni podaci!" });
     }
@@ -29,7 +30,8 @@ const createCar = asyncHandler(async (req, res) => {
             note,
             motor_number,
             mileage,
-            plate_number
+            plate_number,
+            account_id
         });
         res.status(201).json({
             car
@@ -42,9 +44,11 @@ const createCar = asyncHandler(async (req, res) => {
 
 const renderCar = asyncHandler(async (req, res) => {
     const user_id = req.query.user_id;
+    const account_id = req.session.user;
     const car = await Car.findAll({
         where: {
-            user_id: user_id
+            user_id: user_id,
+            account_id
         }
     });
     if (!car) {

@@ -8,6 +8,7 @@ const car = require("../models/car");
 
 const createProductionOrder = asyncHandler(async (req, res) => {
     const { user_id, car_id, mileage, note, description, price } = req.body;
+    const account_id = req.session.user;
     let number;
     const findProduction = await ProductionOrder.findOne({
         order: [['created_at', 'DESC']],
@@ -24,7 +25,7 @@ const createProductionOrder = asyncHandler(async (req, res) => {
         }
     }
     const productionOrder = await ProductionOrder.create({
-        user_id, car_id, number, mileage, note, description, price
+        user_id, car_id, number, mileage, note, description, price,account_id
     });
 
     if (!productionOrder) {
@@ -145,12 +146,13 @@ const findAllProductionOrdersTable = asyncHandler(async (req, res) => {
 const findAllProductionOrders = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, search = '' } = req.query;
     const offset = (page - 1) * limit;
-
+    const account_id = req.session.user;
     const queryCount = `
     select count(*) from production_order as p
     join "user" as u  on u.user_id = p.user_id
     join "car" as c on c.car_id = p.car_id
     where
+    account_id = ${account_id} and
     (p.number ilike '%${search}%'
     or c.chassis_number ilike '%${search}%'
     or u.first_name ilike '%${search}%'
@@ -178,6 +180,7 @@ const findAllProductionOrders = asyncHandler(async (req, res) => {
 	 join "user" as u  on u.user_id = p.user_id
 	 join "car" as c on c.car_id = p.car_id
 	where 
+    account_id = ${account_id} and
 	(p.number ilike '%${search}%'
 	or c.chassis_number ilike '%${search}%'
 	or u.first_name ilike '%${search}%'

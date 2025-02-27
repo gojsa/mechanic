@@ -3,6 +3,7 @@ const db = require("../config/db");
 const Offer = db.offer;
 const OfferArticle = db.offerArticle;
 const { Op, QueryTypes, where } = require("sequelize");
+const account = require("../models/account");
 
 const redirectToOffer = asyncHandler(async (req, res) => {
 
@@ -12,9 +13,16 @@ const findAllOffers = asyncHandler(async (req, res) => {
     const search = req.query.search;
     const limit = req.params.limit;
     const offset = req.params.offset;
+    const account_id = req.session.user;
     const queryCount = `
     select count(*) as count from offer
-
+       where
+    account_id = ${account_id} and
+    first_name ilike '%${search}%' or
+    last_name ilike '%${search}%' or 
+    car_name ilike '%${search}%' or
+    car_plate ilike '%${search}%' or
+    jib like '%${search}%'
     `;
     const offersCount = await db.sequelize.query(queryCount, {
         type: QueryTypes.SELECT,
@@ -22,6 +30,7 @@ const findAllOffers = asyncHandler(async (req, res) => {
     const query = `
     select * from offer
     where
+    account_id = ${account_id} and
     first_name ilike '%${search}%' or
     last_name ilike '%${search}%' or 
     car_name ilike '%${search}%' or
@@ -44,6 +53,7 @@ const findAllOffers = asyncHandler(async (req, res) => {
 
 const createOffer = asyncHandler(async (req, res) => {
     const {  first_name, last_name, car_name, car_plate, jib, note } = req.body;
+    const account_id = req.session.user;
     let number;
     const findOffer = await Offer.findOne({
         order: [['created_at', 'DESC']],
@@ -68,6 +78,7 @@ const createOffer = asyncHandler(async (req, res) => {
         car_plate,
         jib,
         note,
+        account_id
     });
     if (!offer) {
         res.status(400);

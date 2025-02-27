@@ -53,6 +53,7 @@ const createInovice = asyncHandler(async (req, res) => {
     const payment_date = req.body.payment_date;
     const activated_date = req.body.activated_date;
     const note = req.body.note;
+    const account_id = req.session.user;
     try {
         let number;
         const findInvoice = await Invoice.findOne({
@@ -77,7 +78,8 @@ const createInovice = asyncHandler(async (req, res) => {
             number,
             payment_date,
             activated_date,
-            note
+            note,
+            account_id
         });
 
         if (!invoice) {
@@ -148,7 +150,12 @@ const allInvoices = asyncHandler(async (req, res) => {
     const offset = req.params.offset;
     const limit = req.params.limit;
     const search = req.query.search;
-    const quryCount = `select count(*) as count from invoice`;
+    const account_id = req.session.user;
+    const quryCount = `select count(*) as count from invoice
+    where account_id = ${account_id} and
+    (i.number ilike '%${search}%' or p.number ilike '%${search}%' or concat(u.first_name,' ',u.last_name) ilike '%${search}%' or c.name ilike '%${search}%')
+        order by i.activated_date desc
+    `;
     const count = await db.sequelize
         .query(quryCount, {
             type: QueryTypes.SELECT
@@ -170,7 +177,9 @@ const allInvoices = asyncHandler(async (req, res) => {
         join "user" u on u.user_id = i.user_id
         join car c on c.car_id = i.car_id
         join production_order p on p.production_order_id = i.production_order_id
-        where (i.number ilike '%${search}%' or p.number ilike '%${search}%' or concat(u.first_name,' ',u.last_name) ilike '%${search}%' or c.name ilike '%${search}%')
+        where 
+        account_id = ${account_id} and
+        (i.number ilike '%${search}%' or p.number ilike '%${search}%' or concat(u.first_name,' ',u.last_name) ilike '%${search}%' or c.name ilike '%${search}%')
         order by i.activated_date desc
         offset ${offset - 1} limit ${limit}
     `
