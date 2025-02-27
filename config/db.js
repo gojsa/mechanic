@@ -1,8 +1,5 @@
 const { Sequelize, Op } = require("sequelize");
-console.log(process.env.DB_HOST)
-console.log(process.env.DB)
-console.log(process.env.USER)
-console.log(process.env.PASSWORD)
+
 const sequelize = new Sequelize(process.env.DB, process.env.USER, process.env.PASSWORD, {
     host: process.env.DB_HOST,
     dialect: "postgres",
