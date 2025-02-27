@@ -56,3 +56,6 @@ body {
 .form-button:hover {
     background-color: #0056b3;
 }
+.margin-main-container{
+    margin-top: 10%;
+}

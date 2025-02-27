@@ -22,11 +22,11 @@
     <div class="main-container-pdf" id="main-container-pdf-id">
         <div class="container" id="invoice">
             <div class="header-pdf">
-                <h1 class="invoice-h1">AUTOMEHANIČAR MIHA</h1>
-                <p class="invoice-p">PRIZRENSKA 145A</p>
-                <p class="invoice-p">Telefon: 065-426-700</p>
-                <p class="invoice-p">JIB: 123456789</p>
-                <p class="invoice-p">Ž.R: 552-000-21259047-34</p>
+                <h1 id="accountName" class="invoice-h1">AUTOMEHANIČAR MIHA</h1>
+                <p id="accountAddress" class="invoice-p">PRIZRENSKA 145A</p>
+                <p id="accountPhone" class="invoice-p">Telefon: 065-426-700</p>
+                <p id="accountJib" class="invoice-p">JIB: 123456789</p>
+                <p id="accountZ" class="invoice-p">Ž.R: 552-000-21259047-34</p>
             </div>
             <h2 class="invoice-h2">Račun/Otpremnica</h2>
             <table>
@@ -74,19 +74,19 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     </div>
-    <div class="main-container" id="invoiceFormContainer">
+    <div class="main-container margin-main-container" id="invoiceFormContainer">
         <form class="form-group" action="#" onsubmit="handleFormSubmit(event)" method="POST">
         
             <div class="form-group">
-                <label class="form-label" for="payment_date">Payment Date:</label>
+                <label class="form-label" for="payment_date">Datum plaćanja:</label>
                 <input class="form-input" type="date" id="payment_date" name="payment_date" required>
             </div>
             <div class="form-group">
-                <label class="form-label" for="activated_date">Activated Date:</label>
+                <label class="form-label" for="activated_date">Datum fakture:</label>
                 <input class="form-input" type="date" id="activated_date" name="activated_date" required>
             </div>
             <div class="form-group">
-                <label class="form-label" for="note">Note:</label>
+                <label class="form-label" for="note">Napomena:</label>
                 <textarea class="form-input" id="note" name="note" required></textarea>
             </div>
             <div class="form-group">
@@ -104,7 +104,7 @@
         </form>
     </div>
 
-    <div class="main-container" id="invoiceArticleFormContainer" style="display: none;">
+    <div class="main-container margin-main-container" id="invoiceArticleFormContainer" style="display: none;">
         <form class="form-group" action="#" onsubmit="handleArticleFormSubmit(event)" method="POST">
             <div class="form-group">
                 <label class="form-label" for="article_name">Naziv usluge:</label>
@@ -164,6 +164,7 @@
         const production_order_id = urlParams.get('production_order_id');
         const invoice = JSON.parse(`<%- JSON.stringify(invoice) %>`);
         const invoiceArticle = JSON.parse(`<%- JSON.stringify(invoiceArticle) %>`);
+        const account = JSON.parse(`<%- JSON.stringify(account) %>`);
 
         console.log('Invoice:', invoice);
         console.log('Invoice Article:', invoiceArticle);
@@ -274,7 +275,11 @@
 
 
         // PDF
-
+        document.getElementById("accountName").innerText = account.company_name;
+        document.getElementById("accountAddress").innerText = account.address;
+        document.getElementById("accountPhone").innerText = "Telefon: " + account.phone_number;
+        document.getElementById("accountJib").innerText = "JIB: " + account.jib;
+        document.getElementById("accountZ").innerText = "Ž.R: " + account.card_number;
 
         document.getElementById("invoiceNumber").innerText = invoice[0].number;
         document.getElementById("invoiceDate").innerText = new Date(invoice[0].activated_date).toLocaleDateString();

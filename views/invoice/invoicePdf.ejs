@@ -21,11 +21,11 @@
     <div class="main-container-pdf-one" id="main-container-pdf-id" >
         <div class="container" id="invoice">
             <div class="header-pdf">
-                <h1 class="invoice-h1">AUTOMEHANIČAR MIHA</h1>
-                <p class="invoice-p">PRIZRENSKA 145A</p>
-                <p class="invoice-p">Telefon: 065-426-700</p>
-                <p class="invoice-p">JIB: 123456789</p>
-                <p class="invoice-p">Ž.R: 552-000-21259047-34</p>
+                <h1 id="accountName" class="invoice-h1">AUTOMEHANIČAR MIHA</h1>
+                <p id="accountAddress" class="invoice-p">PRIZRENSKA 145A</p>
+                <p id="accountPhone" class="invoice-p">Telefon: 065-426-700</p>
+                <p id="accountJib" class="invoice-p">JIB: 123456789</p>
+                <p id="accountZ" class="invoice-p">Ž.R: 552-000-21259047-34</p>
             </div>
             <h2 class="invoice-h2">Račun/Otpremnica</h2>
             <table>
@@ -76,8 +76,14 @@
     <script>
         const invoice = JSON.parse(`<%- JSON.stringify(invoice) %>`);
         const invoiceArticle = JSON.parse(`<%- JSON.stringify(invoiceArticle) %>`);
-        console.log(invoice);
-        console.log(invoiceArticle);
+        const account = JSON.parse(`<%- JSON.stringify(account) %>`);
+      
+        document.getElementById("accountName").innerText = account.company_name;
+        document.getElementById("accountAddress").innerText = account.address;
+        document.getElementById("accountPhone").innerText = "Telefon: " + account.phone_number;
+        document.getElementById("accountJib").innerText = "JIB: " + account.jib;
+        document.getElementById("accountZ").innerText = "Ž.R: " + account.card_number;
+
         document.getElementById("invoiceNumber").innerText = invoice[0].number;
         document.getElementById("invoiceDate").innerText = new Date(invoice[0].activated_date).toLocaleDateString();
         document.getElementById("owner").innerText = invoice[0].user.first_name + " " + invoice[0].user.last_name;

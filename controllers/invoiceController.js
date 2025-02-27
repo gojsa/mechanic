@@ -5,12 +5,13 @@ const Car = db.car;
 const ProductionOrder = db.productionOrder;
 const Invoice = db.invoice;
 const InvoiceArticle = db.invoiceArticle;
+const Account = db.account;
 const { Op, QueryTypes, where } = require("sequelize");
 let invoiceArticle
 
 const renderInvoice = asyncHandler(async (req, res) => {
     const production_order_id = req.query.production_order_id;
-
+    const account_id = req.session.user;
     const invoice = await Invoice.findAll({
         include: [{
             model: User,
@@ -41,10 +42,17 @@ const renderInvoice = asyncHandler(async (req, res) => {
     } else {
         invoiceArticle = []
     }
+    const account = await Account.findOne({
+        attributes: ["account_id", "company_name", "company_user_name","phone_number", "jib", "address", "card_number"],
+        where: {
+            account_id
+        }
+    });
 
     res.render("invoice/addinvoice", {
         invoice,
-        invoiceArticle
+        invoiceArticle,
+        account
     });
 });
 
@@ -151,11 +159,16 @@ const allInvoices = asyncHandler(async (req, res) => {
     const limit = req.params.limit;
     const search = req.query.search;
     const account_id = req.session.user;
-    const quryCount = `select count(*) as count from invoice
-    where account_id = ${account_id} and
+    
+    const quryCount = `select count(*) as count from invoice i
+            join "user" u on u.user_id = i.user_id
+        join car c on c.car_id = i.car_id
+        join production_order p on p.production_order_id = i.production_order_id
+    where i.account_id = ${account_id} and
     (i.number ilike '%${search}%' or p.number ilike '%${search}%' or concat(u.first_name,' ',u.last_name) ilike '%${search}%' or c.name ilike '%${search}%')
-        order by i.activated_date desc
+        
     `;
+
     const count = await db.sequelize
         .query(quryCount, {
             type: QueryTypes.SELECT
@@ -178,11 +191,12 @@ const allInvoices = asyncHandler(async (req, res) => {
         join car c on c.car_id = i.car_id
         join production_order p on p.production_order_id = i.production_order_id
         where 
-        account_id = ${account_id} and
+        i.account_id = ${account_id} and
         (i.number ilike '%${search}%' or p.number ilike '%${search}%' or concat(u.first_name,' ',u.last_name) ilike '%${search}%' or c.name ilike '%${search}%')
         order by i.activated_date desc
         offset ${offset - 1} limit ${limit}
     `
+    
     const invoices = await db.sequelize
         .query(query, {
             type: QueryTypes.SELECT
@@ -247,7 +261,7 @@ const updateInvoice = asyncHandler(async (req, res) => {
 
 const pdfInvoice = asyncHandler(async (req, res) => {
     const invoice_id = req.params.invoice_id;
-
+    const account_id = req.session.user;
     const invoice = await Invoice.findAll({
         include: [{
             model: User,
@@ -279,9 +293,20 @@ const pdfInvoice = asyncHandler(async (req, res) => {
         invoiceArticle = []
     }
 
+    const account = await Account.findOne({
+        attributes: ["account_id", "company_name", "company_user_name","phone_number", "jib", "address", "card_number"],
+        where: {
+            account_id
+        }
+    });
+    if (!account) {
+        res.status(500).json({ message: "Nalog nije pronadjen!" });
+    }
+
     res.render("invoice/invoicePdf", {
         invoice,
-        invoiceArticle
+        invoiceArticle,
+        account
     });
 });
 
