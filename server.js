@@ -10,6 +10,7 @@ app.get("/", async (req, res) => {
 // app.get("/car/onecar", async (req, res) => {
 //   res.render("car/onecar");
 // });
+app.use("/api/calendar", require("./routes/calendarRoute.js"));
 app.use("/api/user", require("./routes/userRoute.js"));
 app.use("/api/account", require("./routes/accountRoute.js"));
 app.use("/api/car", require("./routes/carRoute.js"));

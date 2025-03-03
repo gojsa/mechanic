@@ -6,10 +6,12 @@ const {
   createUser,
   getOneUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  renderCalendar
 } = require("../controllers/userController");
 
 
+router.get("/render-calendar", renderCalendar);
 router.get("/:user_id",protectMiddlwere, getOneUser);
 router.get("/:limit/:offset",protectMiddlwere, getUsers);
 router.post("/", protectMiddlwere, createUser);

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+</head>
+<body>
+    <div id="calendar"></div>
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          var calendarEl = document.getElementById('calendar');
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: '/api/calendar/appointments',  // Povlači podatke iz backend-a
+            selectable: true,
+            dateClick: function (info) {
+              alert('Datum odabran: ' + info.dateStr);
+            }
+          });
+          calendar.render();
+        });
+      </script> -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      events: function(fetchInfo, successCallback, failureCallback) {
+        fetch('/api/calendar/appointments') // Poziv API-ja
+          .then(response => response.json())
+          .then(data => {
+            // Konverzija vremena iz UTC u lokalno
+            const events = data.map(event => ({
+              title: event.title,
+              start: new Date(event.start).toISOString().slice(0, -1), // ISO format
+              end: new Date(event.end).toISOString().slice(0, -1)
+            }));
+            successCallback(events);
+          })
+          .catch(error => failureCallback(error));
+      },
+      selectable: true,
+      dateClick: function (info) {
+        alert('Odabrani datum: ' + info.dateStr);
+      }
+    });
+    calendar.render();
+  });
+</script>
+
+      
+</body>
+</html>

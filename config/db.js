@@ -24,6 +24,7 @@ db.Sequelize = Sequelize;
 db.Op = Op;
 db.sequelize = sequelize;
 
+db.appointment = require("../models/appointment")(sequelize, Sequelize);
 db.account = require("../models/account")(sequelize, Sequelize);
 db.user = require("../models/user")(sequelize, Sequelize);
 db.car = require("../models/car")(sequelize, Sequelize);

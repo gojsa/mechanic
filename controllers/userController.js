@@ -180,4 +180,11 @@ const deleteUser = asyncHandler(async (req, res) => {
 
 });
 
-module.exports = { getUsers, createUser, getOneUser, updateUser, deleteUser };
+
+const renderCalendar = asyncHandler(async (req, res) => {
+   
+
+    res.render("calendar/calendar");
+});
+
+module.exports = { getUsers, createUser, getOneUser, updateUser, deleteUser,renderCalendar };

@@ -208,7 +208,7 @@ const allInvoices = asyncHandler(async (req, res) => {
 });
 
 const redirectToAll = asyncHandler(async (req, res) => {
-    res.render("invoice/allinvoices");
+    res.render("invoice/Allinvoices");
 })
 
 const updateInvoice = asyncHandler(async (req, res) => {
